@@ -1,0 +1,115 @@
+:root {
+  --brand-red: #D91C24;
+  --brand-red-hover: #b8141b;
+  --dark-overlay: rgba(10, 15, 26, 0.95);
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: #f3f4f6;
+  color: #1f2937;
+}
+
+/* Auth Container Card */
+.login-card-wrapper {
+  max-width: 1080px;
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  border: 1px solid #e5e7eb;
+}
+
+/* Left Hero Section with Angled Overlay */
+.hero-left-section {
+  position: relative;
+  background-image: url('https://images.unsplash.com/photo-1609521263047-f8f205293f24?auto=format&fit=crop&w=1200&q=80');
+  background-size: cover;
+  background-position: center;
+  min-height: 600px;
+}
+
+/* The distinct angled dark shape on the left */
+.hero-left-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background: linear-gradient(135deg, rgba(8, 10, 15, 0.97) 0%, rgba(15, 18, 28, 0.97) 100%);
+  clip-path: polygon(0 0, 56% 0, 26% 100%, 0 100%);
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+/* Feature Icon Badges */
+.feature-icon-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: transparent;
+  border: 1.5px solid var(--brand-red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--brand-red);
+  flex-shrink: 0;
+}
+
+/* Custom Red Primary Button */
+.btn-brand-red {
+  background-color: var(--brand-red) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 0.75rem 1.5rem !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-brand-red:hover {
+  background-color: var(--brand-red-hover) !important;
+  color: #ffffff !important;
+}
+
+/* Inputs & Buttons */
+.form-control-custom {
+  background-color: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 8px !important;
+  padding: 0.75rem 1rem !important;
+  font-size: 0.875rem !important;
+  color: #1f2937 !important;
+  transition: all 0.2s ease !important;
+}
+
+.form-control-custom:focus {
+  border-color: var(--brand-red) !important;
+  box-shadow: 0 0 0 3px rgba(217, 28, 36, 0.15) !important;
+  outline: none !important;
+}
+
+.form-control-custom::placeholder {
+  color: #9ca3af !important;
+}
+
+.social-btn {
+  border: 1px solid #d1d5db !important;
+  border-radius: 8px !important;
+  background-color: #ffffff !important;
+  padding: 0.75rem !important;
+  transition: all 0.2s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.social-btn:hover {
+  background-color: #f9fafb !important;
+  border-color: #9ca3af !important;
+}
