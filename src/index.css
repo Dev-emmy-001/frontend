@@ -113,3 +113,127 @@ body {
   background-color: #f9fafb !important;
   border-color: #9ca3af !important;
 }
+
+/* Top Bar Marquee Animation */
+.marquee-container {
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.marquee-content {
+  display: inline-block;
+  padding-left: 100%;
+  animation: marquee-scroll 30s linear infinite;
+}
+
+@keyframes marquee-scroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+
+
+
+:root {
+  --brand-green: #065F46;
+  --brand-green-hover: #044E39;
+  --light-bg: #F9FAFB;
+}
+
+/* Green Brand Buttons */
+.btn-brand-green {
+  background-color: var(--brand-green);
+  color: #ffffff;
+  font-weight: 700;
+  border: none;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-brand-green:hover {
+  background-color: var(--brand-green-hover);
+  color: #ffffff;
+}
+
+/* Card & Box Utilities */
+.about-feature-card {
+  background: #ffffff;
+  border: 1px solid #F3F4F6;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.about-feature-card:hover {
+  transform: translateY(-2px);
+}
+
+.icon-box-green {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #ECFDF5;
+  color: var(--brand-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stats-bar-wrapper {
+  background: #F3F4F6;
+  border-radius: 12px;
+}
+
+.video-play-badge {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(4px);
+}
+
+:root {
+  --brand-green: #065F46;
+  --brand-green-hover: #044E39;
+}
+
+/* Green Brand Buttons */
+.btn-brand-green {
+  background-color: var(--brand-green);
+  color: #ffffff;
+  font-weight: 700;
+  border: none;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-brand-green:hover {
+  background-color: var(--brand-green-hover);
+  color: #ffffff;
+}
+
+/* Elevated Floating Contact Cards */
+.floating-contact-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+  border: 1px solid #F3F4F6;
+}
+
+/* Form Inputs */
+.form-input-light {
+  background-color: #ffffff;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+}
+
+.form-input-light:focus {
+  border-color: var(--brand-green);
+  box-shadow: 0 0 0 3px rgba(6, 95, 70, 0.1);
+  outline: none;
+}

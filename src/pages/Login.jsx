@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Car, ShieldCheck, CreditCard, Users, Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
-import autonexaLogo from '../assets/autonexa_logo.png';
+import logoImg from '../assets/logo.png';
 
 
 const Login = () => {
@@ -35,7 +35,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-vh-100 d-flex flex-column align-items-center justify-content-center p-3" style={{ backgroundColor: '#9ca3af' }}>
+    <div className="min-vh-100 d-flex flex-column align-items-center justify-content-center p-3" style={{ backgroundColor: '#ffffff' }}>
       
 
 
@@ -50,9 +50,9 @@ const Login = () => {
             {/* Logo Header */}
             <div className="hero-content">
               <img 
-                src={autonexaLogo} 
-                alt="AutoNexa Logo" 
-                style={{ width: '230px', height: 'auto', display: 'block' }} 
+                src={logoImg} 
+                alt="Summit Auto Group Logo" 
+                style={{ width: '270px', height: 'auto', display: 'block' }} 
               />
             </div>
 

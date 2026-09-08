@@ -7,8 +7,8 @@ import autonexaLogo from '../assets/autonexa_logo.png';
 const Navbar = () => {
   const location = useLocation();
 
-  // Hide navigation bar on Login and Signup pages
-  if (location.pathname === '/login' || location.pathname === '/signup') {
+  // Hide navigation bar on Home, Login and Signup pages
+  if (location.pathname === '/' || location.pathname === '/login' || location.pathname === '/signup') {
     return null;
   }
 
@@ -17,9 +17,9 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           
-          <Link to="/" className="flex items-center">
+          {/* <Link to="/" className="flex items-center">
             <img src={autonexaLogo} alt="AutoNexa Logo" style={{ height: '36px', width: 'auto' }} />
-          </Link>
+          </Link> */}
 
           <div className="hidden md:flex items-center space-x-8 text-sm font-semibold text-slate-300">
             <Link to="/" className="hover:text-brand-red transition-colors">HOME</Link>

@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Car, ShieldCheck,  CreditCard,  Users, Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
-import autonexaLogo from '../assets/autonexa_logo.png';
+import logoImg from '../assets/logo.png';
 
 
 const Signup = () => {
-  const [formData, setFormData] = useState({ fullName: '', email: '', ConfirmPassword: '', password: '', role: 'buyer' });
+  const [formData, setFormData] = useState({ fullName: '', email: '', confirmPassword: '', password: '', role: 'buyer' });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -16,12 +16,13 @@ const Signup = () => {
     e.preventDefault();
     setError('');
     setLoading(true);
-    if (formData.password != formData.confirmPassword) {
-      return setError('Passwords do not match')
+    if (formData.password !== formData.confirmPassword) {
+      setLoading(false);
+      return setError('Passwords do not match');
     }
 
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', formData);
+      const res = await axios.post('http://localhost:5000/api/auth/register', formData);
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data.user));
 
@@ -37,7 +38,7 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-vh-100 d-flex flex-column align-items-center justify-content-center p-3" style={{ backgroundColor: '#9ca3af' }}>
+    <div className="min-vh-100 d-flex flex-column align-items-center justify-content-center p-3" style={{ backgroundColor: '#ffffff' }}>
 
 
 
@@ -52,15 +53,15 @@ const Signup = () => {
             {/* Logo Header */}
             <div className="hero-content">
               <img
-                src={autonexaLogo}
-                alt="AutoNexa Logo"
-                style={{ width: '230px', height: 'auto', display: 'block' }}
+                src={logoImg}
+                alt="Summit Auto Group Logo"
+                style={{ width: '270px', height: 'auto', display: 'block' }}
               />
             </div>
 
             {/* Content Body */}
             <div className="hero-content my-auto py-4">
-              <h2 className="fw-bold text-white mb-2" style={{ fontSize: '1.85rem' }}>  Join AutoNexa Marketplace </h2>
+              <h2 className="fw-bold text-white mb-2" style={{ fontSize: '1.85rem' }}>  Join Summit Auto Group </h2>
               <p className="text-white-50 small mb-4" style={{ fontSize: '0.85rem' }}>Create an account to continue</p>
 
               <div className="d-flex flex-column gap-3">
@@ -106,10 +107,10 @@ const Signup = () => {
                 <div className="mb-3">
                   <label className="form-label text-dark fw-bold small mb-1">Full Name</label>
                   <input
-                    type="email"
+                    type="text"
                     required
                     className="form-control form-control-custom"
-                    placeholder="Enter your email"
+                    placeholder="Enter your full name"
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                   />
                 </div>
@@ -139,10 +140,10 @@ const Signup = () => {
                     <div className="mb-3">
                       <label className="form-label text-dark fw-bold small mb-1">Confirm Password</label>
                       <input
-                        type="email"
+                        type={showPassword ? 'text' : 'password'}
                         required
                         className="form-control form-control-custom"
-                        placeholder="Enter your email"
+                        placeholder="Confirm your password"
                         onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                       />
                     </div>
@@ -153,7 +154,7 @@ const Signup = () => {
                   disabled={loading}
                   className="btn btn-brand-red w-100 py-2.5 mb-4"
                 >
-                  {loading ? 'Signing In...' : 'Sign In'}
+                  {loading ? 'Signing Up...' : 'Sign Up'}
                 </button>
               </form>
 
@@ -195,11 +196,11 @@ const Signup = () => {
                 </div>
               </div>
 
-              {/* Sign up Link */}
+              {/* Sign in Link */}
               <p className="text-center text-muted small mb-0">
-                Don't have an account?{' '}
-                <Link to="/signup" className="text-danger fw-bold text-decoration-none">
-                  Sign up
+                Already have an account?{' '}
+                <Link to="/login" className="text-danger fw-bold text-decoration-none">
+                  Sign in
                 </Link>
               </p>
 
