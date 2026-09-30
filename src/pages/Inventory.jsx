@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import axios from 'axios';
+import api from '../data/apiConfig';
 import TopBar from '../components/common/TopBar';
 import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
@@ -35,7 +35,7 @@ const Inventory = () => {
   useEffect(() => {
     const fetchVehicles = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/vehicles');
+        const res = await api.get('/vehicles');
         if (res.data && Array.isArray(res.data) && res.data.length > 0) {
           setVehicles(res.data);
         } else {

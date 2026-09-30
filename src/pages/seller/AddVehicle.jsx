@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import axios from 'axios';
+import api from '../../data/apiConfig';
 import SellerSidebar from '../../components/seller/SellerSidebar';
 import SellerHeader from '../../components/seller/SellerHeader';
 import VehicleBasicInfo from '../../components/seller/add-vehicle/VehicleBasicInfo';
@@ -45,7 +45,6 @@ const AddVehicle = () => {
     setError('');
 
     try {
-      const token = localStorage.getItem('token');
       const defaultFallbackImage = 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=80';
       
       const payload = {
@@ -56,15 +55,14 @@ const AddVehicle = () => {
         images: images.length > 0 ? images : [defaultFallbackImage]
       };
 
-      await axios.post('http://localhost:5000/api/vehicles', payload, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.post('/vehicles', payload);
 
       alert('Vehicle listed successfully on Summit Auto Group!');
       navigate('/seller-dashboard');
     } catch (err) {
       console.error('Submission error:', err);
-      setError(err.response?.data?.message || 'Failed to create listing. Please verify your fields.');
+      const serverMessage = err.response?.data?.message || err.response?.data?.error;
+      setError(serverMessage || 'Failed to create listing. Please verify your fields.');
     } finally {
       setLoading(false);
     }

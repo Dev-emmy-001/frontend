@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../data/apiConfig';
 import SellerSidebar from '../../components/seller/SellerSidebar';
 import SellerHeader from '../../components/seller/SellerHeader';
 import SellerListingsTable from '../../components/seller/SellerListingsTable';
@@ -10,10 +10,7 @@ const MyListings = () => {
 
   const fetchListings = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/api/vehicles/my-listings', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await api.get('/vehicles/my-listings');
       if (res.data && Array.isArray(res.data)) {
         setListings(res.data);
       }
@@ -30,10 +27,7 @@ const MyListings = () => {
 
   const handleDeleteListing = async (vehicleId) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/vehicles/${vehicleId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.delete(`/vehicles/${vehicleId}`);
       setListings(prev => prev.filter(item => item._id !== vehicleId));
     } catch (err) {
       setListings(prev => prev.filter(item => item._id !== vehicleId));

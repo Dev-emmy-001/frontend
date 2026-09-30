@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
-import axios from 'axios';
+import api from '../../data/apiConfig';
 import SocialAuthButtons from './SocialAuthButtons';
 
 const SignupForm = () => {
   const [formData, setFormData] = useState({ 
     fullName: '', 
     email: '', 
+    phone: '',
     password: '', 
     confirmPassword: '', 
     role: 'buyer' 
@@ -22,22 +23,43 @@ const SignupForm = () => {
     setError('');
     
     if (formData.password !== formData.confirmPassword) {
-      return setError('Passwords do not match');
+      return setError('Passwords do not match. Please re-enter.');
+    }
+
+    if (formData.password.length < 6) {
+      return setError('Password must be at least 6 characters long.');
     }
 
     setLoading(true);
 
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/register', formData);
-      localStorage.setItem('token', res.data.token);
-      localStorage.setItem('user', JSON.stringify(res.data.user));
+      const res = await api.post('/auth/register', {
+        fullName: formData.fullName.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        password: formData.password,
+        role: formData.role
+      });
 
-      const role = res.data.user?.role;
-      if (role === 'admin') navigate('/admin-dashboard');
-      else if (role === 'private_seller' || role === 'business_dealer') navigate('/seller-dashboard');
-      else navigate('/buyer-dashboard');
+      if (res.data.token) {
+        localStorage.setItem('token', res.data.token);
+      }
+      if (res.data.user) {
+        localStorage.setItem('user', JSON.stringify(res.data.user));
+      }
+
+      const role = res.data.user?.role || formData.role;
+      if (role === 'admin') {
+        navigate('/admin-dashboard');
+      } else if (role === 'private_seller' || role === 'business_dealer') {
+        navigate('/seller-dashboard');
+      } else {
+        navigate('/inventory');
+      }
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed. Please check your details.');
+      console.error('Registration failed:', err);
+      const serverMessage = err.response?.data?.message || err.response?.data?.error;
+      setError(serverMessage || 'Registration failed. Please check your details and try again.');
     } finally {
       setLoading(false);
     }
@@ -45,53 +67,110 @@ const SignupForm = () => {
 
   return (
     <div className="col-lg-6 d-flex align-items-center justify-content-center p-4 p-md-5 bg-white">
-      <div className="w-100" style={{ maxWidth: '380px' }}>
+      <div className="w-100" style={{ maxWidth: '400px' }}>
 
-        <div className="text-center mb-4">
+        <div className="text-center mb-3">
           <h3 className="fw-bold text-dark mb-1" style={{ fontSize: '1.65rem' }}>
             Create Account
           </h3>
-          <p className="text-muted small">Sign up to get started</p>
+          <p className="text-muted small">Join Summit Auto Group to buy, sell, or finance</p>
+        </div>
+
+        {/* Account Role Selector */}
+        <div className="d-flex p-1 bg-light rounded-3 mb-3 border border-light">
+          <button
+            type="button"
+            onClick={() => setFormData({ ...formData, role: 'buyer' })}
+            className={`btn btn-sm flex-grow-1 rounded-2 fw-bold transition-all ${
+              formData.role === 'buyer' 
+                ? 'bg-danger text-white shadow-xs' 
+                : 'text-muted hover-text-dark'
+            }`}
+            style={{ fontSize: '12px' }}
+          >
+            Buyer
+          </button>
+          <button
+            type="button"
+            onClick={() => setFormData({ ...formData, role: 'private_seller' })}
+            className={`btn btn-sm flex-grow-1 rounded-2 fw-bold transition-all ${
+              formData.role === 'private_seller' 
+                ? 'bg-danger text-white shadow-xs' 
+                : 'text-muted hover-text-dark'
+            }`}
+            style={{ fontSize: '12px' }}
+          >
+            Private Seller
+          </button>
+          <button
+            type="button"
+            onClick={() => setFormData({ ...formData, role: 'business_dealer' })}
+            className={`btn btn-sm flex-grow-1 rounded-2 fw-bold transition-all ${
+              formData.role === 'business_dealer' 
+                ? 'bg-danger text-white shadow-xs' 
+                : 'text-muted hover-text-dark'
+            }`}
+            style={{ fontSize: '12px' }}
+          >
+            Dealer
+          </button>
         </div>
 
         {error && (
-          <div className="alert alert-danger py-2 text-center small mb-3">
+          <div className="alert alert-danger py-2 px-3 text-center small mb-3">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit}>
-          <div className="mb-3">
+          {/* Full Name */}
+          <div className="mb-2.5">
             <label className="form-label text-dark fw-bold small mb-1">
-              Full Name
+              Full Name *
             </label>
             <input
               type="text"
               required
               value={formData.fullName}
               className="form-control form-control-custom"
-              placeholder="Enter your full name"
+              placeholder="e.g. Emmanuel Saka"
               onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
             />
           </div>
 
-          <div className="mb-3">
+          {/* Email Address */}
+          <div className="mb-2.5">
             <label className="form-label text-dark fw-bold small mb-1">
-              Email Address
+              Email Address *
             </label>
             <input
               type="email"
               required
               value={formData.email}
               className="form-control form-control-custom"
-              placeholder="Enter your email"
+              placeholder="e.g. name@example.com"
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             />
           </div>
 
-          <div className="mb-3">
+          {/* Phone Number (Optional) */}
+          <div className="mb-2.5">
             <label className="form-label text-dark fw-bold small mb-1">
-              Password
+              Phone Number <span className="text-muted fw-normal">(Optional)</span>
+            </label>
+            <input
+              type="tel"
+              value={formData.phone}
+              className="form-control form-control-custom"
+              placeholder="e.g. (713) 555-0198"
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            />
+          </div>
+
+          {/* Password */}
+          <div className="mb-2.5">
+            <label className="form-label text-dark fw-bold small mb-1">
+              Password *
             </label>
             <div className="position-relative">
               <input
@@ -99,7 +178,7 @@ const SignupForm = () => {
                 required
                 value={formData.password}
                 className="form-control form-control-custom pe-5"
-                placeholder="Create a password"
+                placeholder="Minimum 6 characters"
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               />
               <button
@@ -114,16 +193,17 @@ const SignupForm = () => {
             </div>
           </div>
 
-          <div className="mb-4">
+          {/* Confirm Password */}
+          <div className="mb-3">
             <label className="form-label text-dark fw-bold small mb-1">
-              Confirm Password
+              Confirm Password *
             </label>
             <input
               type={showPassword ? 'text' : 'password'}
               required
               value={formData.confirmPassword}
               className="form-control form-control-custom"
-              placeholder="Confirm your password"
+              placeholder="Re-enter password"
               onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
             />
           </div>
@@ -131,15 +211,15 @@ const SignupForm = () => {
           <button
             type="submit"
             disabled={loading}
-            className="btn btn-brand-red w-100 py-2.5 mb-4"
+            className="btn btn-brand-red w-100 py-2.5 mb-3 animate-btn"
           >
             {loading ? 'Creating Account...' : 'Sign Up'}
           </button>
         </form>
 
         {/* Or Divider */}
-        <div className="position-relative text-center mb-4">
-          <hr className="text-muted opacity-25" />
+        <div className="position-relative text-center mb-3">
+          <hr className="text-muted opacity-25 m-0" />
           <span className="position-absolute top-50 start-50 translate-middle bg-white px-2 text-muted small">
             or
           </span>
@@ -151,7 +231,7 @@ const SignupForm = () => {
         {/* Sign in Link */}
         <p className="text-center text-muted small mb-0">
           Already have an account?{' '}
-          <Link to="/login" className="text-danger fw-bold text-decoration-none">
+          <Link to="/login" className="text-danger fw-bold text-decoration-none hover-text-danger">
             Sign in
           </Link>
         </p>

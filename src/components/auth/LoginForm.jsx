@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
-import axios from 'axios';
+import api from '../../data/apiConfig';
 import SocialAuthButtons from './SocialAuthButtons';
 
 const LoginForm = () => {
@@ -17,16 +17,30 @@ const LoginForm = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', formData);
-      localStorage.setItem('token', res.data.token);
-      localStorage.setItem('user', JSON.stringify(res.data.user));
+      const res = await api.post('/auth/login', {
+        email: formData.email.trim(),
+        password: formData.password
+      });
+
+      if (res.data.token) {
+        localStorage.setItem('token', res.data.token);
+      }
+      if (res.data.user) {
+        localStorage.setItem('user', JSON.stringify(res.data.user));
+      }
 
       const role = res.data.user?.role;
-      if (role === 'admin') navigate('/admin-dashboard');
-      else if (role === 'private_seller' || role === 'business_dealer') navigate('/seller-dashboard');
-      else navigate('/buyer-dashboard');
+      if (role === 'admin') {
+        navigate('/admin-dashboard');
+      } else if (role === 'private_seller' || role === 'business_dealer') {
+        navigate('/seller-dashboard');
+      } else {
+        navigate('/inventory');
+      }
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid email or password');
+      console.error('Login failed:', err);
+      const serverMessage = err.response?.data?.message || err.response?.data?.error;
+      setError(serverMessage || 'Invalid email or password');
     } finally {
       setLoading(false);
     }
@@ -44,7 +58,7 @@ const LoginForm = () => {
         </div>
 
         {error && (
-          <div className="alert alert-danger py-2 text-center small mb-3">
+          <div className="alert alert-danger py-2 px-3 text-center small mb-3">
             {error}
           </div>
         )}
@@ -98,7 +112,7 @@ const LoginForm = () => {
           <button 
             type="submit" 
             disabled={loading} 
-            className="btn btn-brand-red w-100 py-2.5 mb-4"
+            className="btn btn-brand-red w-100 py-2.5 mb-4 animate-btn"
           >
             {loading ? 'Signing In...' : 'Sign In'}
           </button>
@@ -118,7 +132,7 @@ const LoginForm = () => {
         {/* Sign up Link */}
         <p className="text-center text-muted small mb-0">
           Don't have an account?{' '}
-          <Link to="/signup" className="text-danger fw-bold text-decoration-none">
+          <Link to="/signup" className="text-danger fw-bold text-decoration-none hover-text-danger">
             Sign up
           </Link>
         </p>
