@@ -1,7 +1,10 @@
 :root {
   --brand-red: #D91C24;
   --brand-red-hover: #b8141b;
+  --brand-green: #065F46;
+  --brand-green-hover: #044E39;
   --dark-overlay: rgba(10, 15, 26, 0.95);
+  --light-bg: #F9FAFB;
 }
 
 body {
@@ -11,9 +14,52 @@ body {
   color: #1f2937;
 }
 
+/* Animations */
+@keyframes slideRight {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-right {
+  animation: slideRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.delay-1 { animation-delay: 0.15s; opacity: 0; }
+.delay-2 { animation-delay: 0.3s; opacity: 0; }
+.delay-3 { animation-delay: 0.45s; opacity: 0; }
+.delay-4 { animation-delay: 0.6s; opacity: 0; }
+
+.animate-btn {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease !important;
+}
+
+.animate-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(217, 28, 36, 0.3);
+}
+
+/* Hover Helpers */
+.hover-text-danger:hover {
+  color: var(--brand-red) !important;
+}
+
+.hover-text-white:hover {
+  color: #ffffff !important;
+}
+
+.hover-text-dark:hover {
+  color: #111827 !important;
+}
+
 /* Auth Container Card */
 .login-card-wrapper {
-  max-width: 1080px;
+  max-width: 980px;
   width: 100%;
   border-radius: 16px;
   overflow: hidden;
@@ -27,7 +73,7 @@ body {
   background-image: url('https://images.unsplash.com/photo-1609521263047-f8f205293f24?auto=format&fit=crop&w=1200&q=80');
   background-size: cover;
   background-position: center;
-  min-height: 600px;
+  min-height: 560px;
 }
 
 /* The distinct angled dark shape on the left */
@@ -75,6 +121,21 @@ body {
 .btn-brand-red:hover {
   background-color: var(--brand-red-hover) !important;
   color: #ffffff !important;
+}
+
+/* Green Brand Buttons */
+.btn-brand-green {
+  background-color: var(--brand-green);
+  color: #ffffff;
+  font-weight: 700;
+  border: none;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-brand-green:hover {
+  background-color: var(--brand-green-hover);
+  color: #ffffff;
 }
 
 /* Inputs & Buttons */
@@ -136,29 +197,6 @@ body {
   }
 }
 
-
-
-:root {
-  --brand-green: #065F46;
-  --brand-green-hover: #044E39;
-  --light-bg: #F9FAFB;
-}
-
-/* Green Brand Buttons */
-.btn-brand-green {
-  background-color: var(--brand-green);
-  color: #ffffff;
-  font-weight: 700;
-  border: none;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-}
-
-.btn-brand-green:hover {
-  background-color: var(--brand-green-hover);
-  color: #ffffff;
-}
-
 /* Card & Box Utilities */
 .about-feature-card {
   background: #ffffff;
@@ -195,32 +233,18 @@ body {
   backdrop-filter: blur(4px);
 }
 
-:root {
-  --brand-green: #065F46;
-  --brand-green-hover: #044E39;
-}
-
-/* Green Brand Buttons */
-.btn-brand-green {
-  background-color: var(--brand-green);
-  color: #ffffff;
-  font-weight: 700;
-  border: none;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-}
-
-.btn-brand-green:hover {
-  background-color: var(--brand-green-hover);
-  color: #ffffff;
-}
-
 /* Elevated Floating Contact Cards */
 .floating-contact-card {
   background: #ffffff;
   border-radius: 12px;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
   border: 1px solid #F3F4F6;
+}
+
+@media (min-width: 992px) {
+  .border-end-lg {
+    border-right: 1px solid #e5e7eb !important;
+  }
 }
 
 /* Form Inputs */
