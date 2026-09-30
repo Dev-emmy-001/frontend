@@ -1,16 +1,43 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { User, LogOut, LayoutDashboard, ShoppingBag, Heart, Shield } from 'lucide-react';
 import logoImg from '../../assets/logo.png';
 import { siteConfig } from '../../data/siteConfig';
 
 const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('user');
+    const token = localStorage.getItem('token');
+    if (userStr && token) {
+      try {
+        setCurrentUser(JSON.parse(userStr));
+      } catch {
+        setCurrentUser(null);
+      }
+    } else {
+      setCurrentUser(null);
+    }
+  }, [location.pathname]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setCurrentUser(null);
+    navigate('/login');
+  };
 
   const isActive = (path) => {
     if (path === '/' && location.pathname === '/') return true;
     if (path !== '/' && location.pathname.startsWith(path)) return true;
     return false;
   };
+
+  const isSeller = currentUser?.role === 'private_seller' || currentUser?.role === 'business_dealer' || currentUser?.role === 'admin';
+  const dashboardLink = isSeller ? '/seller-dashboard' : '/buyer-dashboard';
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
@@ -101,19 +128,89 @@ const Navbar = () => {
           </ul>
 
           <div className="d-flex align-items-center gap-3 mt-3 mt-lg-0">
-            <Link 
-              to="/login" 
-              className="text-dark fw-bold text-decoration-none small text-uppercase hover-text-danger me-2"
-              style={{ transition: 'color 0.2s' }}
-            >
-              LOGIN
-            </Link>
-            <Link 
-              to="/signup" 
-              className="btn btn-brand-red btn-sm fw-bold px-4 py-2 text-uppercase text-white animate-btn"
-            >
-              GET PRE-APPROVED
-            </Link>
+            {currentUser ? (
+              <div className="dropdown">
+                <button
+                  className="btn btn-outline-dark btn-sm fw-bold dropdown-toggle d-flex align-items-center gap-2 px-3 py-2"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <User size={16} className="text-danger" />
+                  <span className="text-truncate" style={{ maxWidth: '140px' }}>
+                    {currentUser.fullName || currentUser.email || 'My Account'}
+                  </span>
+                </button>
+                <ul className="dropdown-menu dropdown-menu-end shadow-sm border-0 p-2" style={{ minWidth: '200px' }}>
+                  <li className="px-2 py-1 mb-1 border-bottom border-light">
+                    <small className="text-muted d-block" style={{ fontSize: '11px' }}>Signed in as</small>
+                    <strong className="text-dark small d-block text-truncate">{currentUser.email}</strong>
+                    <span className="badge bg-danger bg-opacity-10 text-danger mt-1" style={{ fontSize: '10px' }}>
+                      {isSeller ? 'Seller Account' : 'Buyer Account'}
+                    </span>
+                  </li>
+
+                  <li>
+                    <Link className="dropdown-item small d-flex align-items-center gap-2 py-2" to={dashboardLink}>
+                      <LayoutDashboard size={15} />
+                      <span>{isSeller ? 'Seller Dashboard' : 'Buyer Dashboard'}</span>
+                    </Link>
+                  </li>
+
+                  {!isSeller && (
+                    <>
+                      <li>
+                        <Link className="dropdown-item small d-flex align-items-center gap-2 py-2" to="/my-orders">
+                          <ShoppingBag size={15} />
+                          <span>My Orders</span>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link className="dropdown-item small d-flex align-items-center gap-2 py-2" to="/favorites">
+                          <Heart size={15} />
+                          <span>Favorites</span>
+                        </Link>
+                      </li>
+                    </>
+                  )}
+
+                  <li>
+                    <Link className="dropdown-item small d-flex align-items-center gap-2 py-2" to="/profile">
+                      <User size={15} />
+                      <span>Profile Settings</span>
+                    </Link>
+                  </li>
+
+                  <li><hr className="dropdown-divider my-1" /></li>
+
+                  <li>
+                    <button 
+                      onClick={handleLogout} 
+                      className="dropdown-item small text-danger d-flex align-items-center gap-2 py-2"
+                    >
+                      <LogOut size={15} />
+                      <span>Log Out</span>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            ) : (
+              <>
+                <Link 
+                  to="/login" 
+                  className="text-dark fw-bold text-decoration-none small text-uppercase hover-text-danger me-2"
+                  style={{ transition: 'color 0.2s' }}
+                >
+                  LOGIN
+                </Link>
+                <Link 
+                  to="/signup" 
+                  className="btn btn-brand-red btn-sm fw-bold px-4 py-2 text-uppercase text-white animate-btn"
+                >
+                  GET PRE-APPROVED
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>

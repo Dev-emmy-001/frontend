@@ -52,7 +52,7 @@ const VehicleCard = ({ car, isDark = false }) => {
 
         <div className={`pt-3 mt-2 border-top ${isDark ? 'border-secondary' : 'border-light'}`}>
           <Link 
-            to={`/vehicle/${car._id || ''}`} 
+            to={`/vehicle/${car?._id || car?.id || '1'}`} 
             className="text-danger fw-bold small text-decoration-none d-flex align-items-center gap-1 hover-text-danger" 
             style={{ fontSize: '12px' }}
           >

@@ -54,7 +54,7 @@ const SignupForm = () => {
       } else if (role === 'private_seller' || role === 'business_dealer') {
         navigate('/seller-dashboard');
       } else {
-        navigate('/inventory');
+        navigate('/buyer-dashboard');
       }
     } catch (err) {
       console.error('Registration failed:', err);
