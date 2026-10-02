@@ -36,8 +36,9 @@ const Navbar = () => {
     return false;
   };
 
-  const isSeller = currentUser?.role === 'private_seller' || currentUser?.role === 'business_dealer' || currentUser?.role === 'admin';
-  const dashboardLink = isSeller ? '/seller-dashboard' : '/buyer-dashboard';
+  const isAdmin = currentUser?.role === 'admin';
+  const isSeller = currentUser?.role === 'private_seller' || currentUser?.role === 'business_dealer';
+  const dashboardLink = isAdmin ? '/admin-dashboard' : isSeller ? '/seller-dashboard' : '/buyer-dashboard';
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
@@ -145,19 +146,36 @@ const Navbar = () => {
                   <li className="px-2 py-1 mb-1 border-bottom border-light">
                     <small className="text-muted d-block" style={{ fontSize: '11px' }}>Signed in as</small>
                     <strong className="text-dark small d-block text-truncate">{currentUser.email}</strong>
-                    <span className="badge bg-danger bg-opacity-10 text-danger mt-1" style={{ fontSize: '10px' }}>
-                      {isSeller ? 'Seller Account' : 'Buyer Account'}
+                    <span className={`badge ${isAdmin ? 'bg-danger text-white' : 'bg-danger bg-opacity-10 text-danger'} mt-1`} style={{ fontSize: '10px' }}>
+                      {isAdmin ? '👑 System Admin' : isSeller ? 'Seller Account' : 'Buyer Account'}
                     </span>
                   </li>
 
                   <li>
                     <Link className="dropdown-item small d-flex align-items-center gap-2 py-2" to={dashboardLink}>
                       <LayoutDashboard size={15} />
-                      <span>{isSeller ? 'Seller Dashboard' : 'Buyer Dashboard'}</span>
+                      <span>{isAdmin ? 'Admin Dashboard' : isSeller ? 'Seller Dashboard' : 'Buyer Dashboard'}</span>
                     </Link>
                   </li>
 
-                  {!isSeller && (
+                  {isAdmin && (
+                    <>
+                      <li>
+                        <Link className="dropdown-item small d-flex align-items-center gap-2 py-2" to="/admin/vehicles">
+                          <Shield size={15} />
+                          <span>Moderate Inventory</span>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link className="dropdown-item small d-flex align-items-center gap-2 py-2" to="/admin/orders">
+                          <ShoppingBag size={15} />
+                          <span>Orders & Escrow</span>
+                        </Link>
+                      </li>
+                    </>
+                  )}
+
+                  {!isSeller && !isAdmin && (
                     <>
                       <li>
                         <Link className="dropdown-item small d-flex align-items-center gap-2 py-2" to="/my-orders">

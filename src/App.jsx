@@ -32,6 +32,14 @@ import SellerEarnings from './pages/seller/SellerEarnings';
 import SellerMessages from './pages/seller/SellerMessages';
 import SellerProfile from './pages/seller/SellerProfile';
 
+// Admin Portal Pages
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminUsers from './pages/admin/AdminUsers';
+import AdminSellers from './pages/admin/AdminSellers';
+import AdminVehicles from './pages/admin/AdminVehicles';
+import AdminOrders from './pages/admin/AdminOrders';
+import AdminRevenue from './pages/admin/AdminRevenue';
+
 function App() {
   return (
     <Router>
@@ -70,6 +78,15 @@ function App() {
           <Route path="/seller-earnings" element={<SellerEarnings />} />
           <Route path="/seller-messages" element={<SellerMessages />} />
           <Route path="/seller-profile" element={<SellerProfile />} />
+
+          {/* Admin Portal Routes */}
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/sellers" element={<AdminSellers />} />
+          <Route path="/admin/vehicles" element={<AdminVehicles />} />
+          <Route path="/admin/orders" element={<AdminOrders />} />
+          <Route path="/admin/revenue" element={<AdminRevenue />} />
 
           {/* Catch-all redirect to Home */}
           <Route path="*" element={<Navigate to="/" replace />} />
