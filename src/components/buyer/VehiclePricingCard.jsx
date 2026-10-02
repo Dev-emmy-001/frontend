@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, Star, ShieldCheck, Phone, Mail, Calculator, Check, MessageSquare } from 'lucide-react';
+import { Heart, Star, ShieldCheck, Phone, Mail, Calculator, Check, MessageSquare, Sparkles } from 'lucide-react';
+import { getCurrencySymbol, formatPrice } from '../../data/mockVehicles';
 
 /**
  * VehiclePricingCard Component
@@ -15,7 +16,11 @@ const VehiclePricingCard = ({ car = {}, onBuyNow, onContactSeller }) => {
   const [isFavorited, setIsFavorited] = useState(false);
 
   const price = car.price != null ? Number(car.price) : 26490;
-  // Estimate estimated monthly financing based on 60mo @ 5.9% with 10% down
+  const currencyCode = car.currency || 'USD';
+  const currencySymbol = getCurrencySymbol(currencyCode);
+  const isNew = (car.condition || '').toUpperCase() === 'NEW';
+
+  // Estimate monthly financing based on 60mo @ 5.9% with 10% down
   const estimatedMonthly = Math.round((price * 0.9 * 1.15) / 60);
 
   const seller = car.seller || {
@@ -36,23 +41,29 @@ const VehiclePricingCard = ({ car = {}, onBuyNow, onContactSeller }) => {
       
       {/* Title & Price */}
       <div className="mb-3">
-        <span className="badge bg-danger bg-opacity-10 text-danger mb-1 fw-bold" style={{ fontSize: '11px' }}>
-          Certified Pre-Owned
-        </span>
+        <div className="d-flex align-items-center gap-2 mb-1">
+          <span className={`badge ${isNew ? 'bg-danger text-white' : 'bg-danger bg-opacity-10 text-danger'} fw-bold`} style={{ fontSize: '11px' }}>
+            {isNew ? '✨ New Car' : 'Used Car (Certified)'}
+          </span>
+          <span className="badge bg-light text-secondary border fw-semibold" style={{ fontSize: '10px' }}>
+            Currency: {currencyCode}
+          </span>
+        </div>
+
         <h3 className="fw-black text-dark mb-1 fs-4" style={{ fontWeight: '900' }}>
           {car.year} {car.make} {car.model}
         </h3>
         
         <div className="d-flex align-items-baseline gap-2 mt-2">
           <h2 className="display-6 fw-black text-danger m-0" style={{ fontWeight: '900' }}>
-            ${price.toLocaleString()}
+            {formatPrice(price, currencyCode)}
           </h2>
-          <span className="text-muted small">Online Price</span>
+          <span className="text-muted small">({currencyCode})</span>
         </div>
 
         <div className="d-flex align-items-center gap-1 text-muted small mt-1">
           <Calculator size={14} className="text-danger" />
-          <span>Est. <strong>${estimatedMonthly}/mo</strong> for 60 mos</span>
+          <span>Est. <strong>{currencySymbol}{estimatedMonthly.toLocaleString()}/mo</strong> for 60 mos</span>
           <Link to="/financing" className="text-danger fw-bold ms-1 text-decoration-none hover-text-danger" style={{ fontSize: '11px' }}>
             Calculate
           </Link>
@@ -61,6 +72,7 @@ const VehiclePricingCard = ({ car = {}, onBuyNow, onContactSeller }) => {
 
       {/* Badges */}
       <div className="d-flex flex-wrap gap-1.5 mb-4">
+        <span className="badge bg-light text-dark border px-2 py-1">{isNew ? 'New' : 'Used'}</span>
         <span className="badge bg-light text-dark border px-2 py-1">{car.year}</span>
         <span className="badge bg-light text-dark border px-2 py-1">{car.transmission || 'Automatic'}</span>
         <span className="badge bg-light text-dark border px-2 py-1">{car.bodyStyle || car.bodyType || 'SUV'}</span>

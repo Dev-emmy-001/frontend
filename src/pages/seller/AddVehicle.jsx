@@ -16,6 +16,8 @@ const AddVehicle = () => {
     model: '',
     year: '2023',
     trim: '',
+    condition: 'Used',
+    currency: 'USD',
     bodyType: 'SUV',
     fuelType: 'Gasoline',
     price: '',
@@ -41,18 +43,24 @@ const AddVehicle = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
 
+    // Validate photo count: minimum of 3 images (interior, exterior and engines)
+    if (images.length < 3) {
+      setError('Please upload a minimum of 3 images (interior, exterior, and engines) before publishing your listing.');
+      window.scrollTo({ top: 300, behavior: 'smooth' });
+      return;
+    }
+
+    setLoading(true);
+
     try {
-      const defaultFallbackImage = 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=80';
-      
       const payload = {
         ...formData,
         price: Number(formData.price),
         mileage: Number(formData.mileage),
         dealerOptions,
-        images: images.length > 0 ? images : [defaultFallbackImage]
+        images
       };
 
       await api.post('/vehicles', payload);

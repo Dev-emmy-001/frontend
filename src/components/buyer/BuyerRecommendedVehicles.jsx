@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, Sparkles, Gauge } from 'lucide-react';
-import { sampleVehicles } from '../../data/mockVehicles';
+import { sampleVehicles, formatPrice } from '../../data/mockVehicles';
 
 /**
  * BuyerRecommendedVehicles Component
@@ -69,7 +69,7 @@ const BuyerRecommendedVehicles = ({ vehicles }) => {
 
                   <div className="d-flex justify-content-between align-items-center">
                     <span className="fw-black text-danger small">
-                      ${Number(car.price || 28990).toLocaleString()}
+                      {formatPrice(car.price, car.currency)}
                     </span>
 
                     <Link 

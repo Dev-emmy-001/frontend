@@ -7,12 +7,43 @@ export const VEHICLE_CATEGORIES = [
   'HYBRIDS'
 ];
 
+export const VEHICLE_CONDITIONS = ['ALL', 'USED', 'NEW'];
+
+export const CURRENCY_OPTIONS = [
+  { code: 'USD', symbol: '$', name: 'USD ($ - US Dollar)' },
+  { code: 'EUR', symbol: '€', name: 'EUR (€ - Euro)' },
+  { code: 'GBP', symbol: '£', name: 'GBP (£ - British Pound)' },
+  { code: 'NGN', symbol: '₦', name: 'NGN (₦ - Nigerian Naira)' },
+  { code: 'CAD', symbol: 'CA$', name: 'CAD (CA$ - Canadian Dollar)' },
+  { code: 'AUD', symbol: 'AU$', name: 'AUD (AU$ - Australian Dollar)' },
+  { code: 'AED', symbol: 'AED', name: 'AED (د.إ - UAE Dirham)' },
+  { code: 'JPY', symbol: '¥', name: 'JPY (¥ - Japanese Yen)' },
+  { code: 'ZAR', symbol: 'R', name: 'ZAR (R - South African Rand)' },
+  { code: 'GHS', symbol: 'GH₵', name: 'GHS (GH₵ - Ghanaian Cedi)' },
+  { code: 'KES', symbol: 'KSh', name: 'KES (KSh - Kenyan Shilling)' }
+];
+
+export const getCurrencySymbol = (currencyCode = 'USD') => {
+  const found = CURRENCY_OPTIONS.find(
+    c => c.code.toUpperCase() === (currencyCode || 'USD').toUpperCase()
+  );
+  return found ? found.symbol : '$';
+};
+
+export const formatPrice = (price, currencyCode = 'USD') => {
+  if (price == null || isNaN(Number(price))) return 'Call for Price';
+  const symbol = getCurrencySymbol(currencyCode);
+  return `${symbol}${Number(price).toLocaleString()}`;
+};
+
 export const sampleVehicles = [
   {
     _id: '1',
     make: 'Toyota',
     model: 'RAV4 XLE',
     year: 2023,
+    condition: 'Used',
+    currency: 'USD',
     price: 26490,
     mileage: 28120,
     transmission: 'Automatic',
@@ -24,6 +55,8 @@ export const sampleVehicles = [
     make: 'Honda',
     model: 'Accord EX',
     year: 2022,
+    condition: 'Used',
+    currency: 'USD',
     price: 24990,
     mileage: 31540,
     transmission: 'Automatic',
@@ -34,9 +67,11 @@ export const sampleVehicles = [
     _id: '3',
     make: 'Ford',
     model: 'F-150 XLT',
-    year: 2021,
+    year: 2024,
+    condition: 'New',
+    currency: 'USD',
     price: 33990,
-    mileage: 45300,
+    mileage: 15,
     transmission: 'Automatic',
     bodyStyle: 'Truck',
     images: ['https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&w=800&q=80']
@@ -46,6 +81,8 @@ export const sampleVehicles = [
     make: 'Chevrolet',
     model: 'Camaro LT',
     year: 2023,
+    condition: 'Used',
+    currency: 'USD',
     price: 28990,
     mileage: 10860,
     transmission: 'Automatic',
@@ -56,9 +93,11 @@ export const sampleVehicles = [
     _id: '5',
     make: 'BMW',
     model: '330i xDrive',
-    year: 2023,
+    year: 2024,
+    condition: 'New',
+    currency: 'USD',
     price: 38500,
-    mileage: 14200,
+    mileage: 20,
     transmission: 'Automatic',
     bodyStyle: 'Sedan',
     images: ['https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=800&q=80']
@@ -67,9 +106,11 @@ export const sampleVehicles = [
     _id: '6',
     make: 'Toyota',
     model: 'Prius Prime Hybrid',
-    year: 2023,
+    year: 2024,
+    condition: 'New',
+    currency: 'USD',
     price: 29800,
-    mileage: 12400,
+    mileage: 12,
     transmission: 'Automatic',
     bodyStyle: 'Hybrid',
     images: ['https://images.unsplash.com/photo-1590362891991-f776e747a588?auto=format&fit=crop&w=800&q=80']
@@ -79,6 +120,8 @@ export const sampleVehicles = [
     make: 'Jeep',
     model: 'Grand Cherokee',
     year: 2022,
+    condition: 'Used',
+    currency: 'USD',
     price: 34990,
     mileage: 22600,
     transmission: 'Automatic',
@@ -89,9 +132,11 @@ export const sampleVehicles = [
     _id: '8',
     make: 'Ford',
     model: 'Mustang GT',
-    year: 2022,
+    year: 2024,
+    condition: 'New',
+    currency: 'USD',
     price: 36700,
-    mileage: 18900,
+    mileage: 8,
     transmission: 'Manual',
     bodyStyle: 'Coupe',
     images: ['https://images.unsplash.com/photo-1584345604476-8ec5e12e42dd?auto=format&fit=crop&w=800&q=80']

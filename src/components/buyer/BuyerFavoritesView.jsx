@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, Trash2, Gauge, ArrowRight, ShoppingBag, Sparkles } from 'lucide-react';
-import { sampleVehicles } from '../../data/mockVehicles';
+import { sampleVehicles, formatPrice } from '../../data/mockVehicles';
 
 /**
  * BuyerFavoritesView Component
@@ -41,6 +41,7 @@ const BuyerFavoritesView = () => {
         <div className="row g-3">
           {favorites.map((car) => {
             const carId = car._id || car.id || '1';
+            const isNew = (car.condition || '').toUpperCase() === 'NEW';
             const carImg = car.images && car.images.length > 0
               ? car.images[0]
               : 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80';
@@ -71,6 +72,14 @@ const BuyerFavoritesView = () => {
                     >
                       {car.year}
                     </span>
+                    <span 
+                      className={`position-absolute bottom-0 end-0 m-2 py-0.5 px-2 fw-bold text-uppercase ${
+                        isNew ? 'bg-danger text-white' : 'bg-black bg-opacity-75 text-white'
+                      }`}
+                      style={{ fontSize: '9px', borderRadius: '3px' }}
+                    >
+                      {isNew ? 'NEW' : 'USED'}
+                    </span>
                   </div>
 
                   {/* Body */}
@@ -90,7 +99,7 @@ const BuyerFavoritesView = () => {
                       </div>
 
                       <h5 className="fw-black text-danger m-0 mb-3" style={{ fontWeight: '900' }}>
-                        ${Number(car.price || 25000).toLocaleString()}
+                        {formatPrice(car.price, car.currency)}
                       </h5>
                     </div>
 

@@ -1,14 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Gauge, ArrowRight } from 'lucide-react';
+import { Gauge, ArrowRight, Sparkles } from 'lucide-react';
+import { formatPrice } from '../../data/mockVehicles';
 
 const VehicleCard = ({ car, isDark = false }) => {
   const fallbackImage = 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=80';
   const imageUrl = car?.images && car.images.length > 0 ? car.images[0] : fallbackImage;
+  const isNew = (car?.condition || '').toUpperCase() === 'NEW';
 
   return (
     <div className={`card h-100 ${isDark ? 'bg-black text-white border-secondary' : 'bg-white text-dark border-light shadow-sm'} overflow-hidden`} style={{ borderRadius: '8px' }}>
-      {/* Image & Year Badge */}
+      {/* Image, Year & Condition Badge */}
       <div className="position-relative" style={{ height: '180px' }}>
         <img 
           src={imageUrl} 
@@ -24,6 +26,18 @@ const VehicleCard = ({ car, isDark = false }) => {
             {car.year}
           </span>
         )}
+
+        {/* Condition Badge (NEW / USED) */}
+        <span 
+          className={`position-absolute top-0 end-0 m-2 py-1 px-2 fw-bold text-uppercase ${
+            isNew 
+              ? 'bg-danger text-white' 
+              : 'bg-black bg-opacity-75 text-white border border-secondary border-opacity-50'
+          }`}
+          style={{ fontSize: '10px', borderRadius: '3px', letterSpacing: '0.5px' }}
+        >
+          {isNew ? '✨ NEW CAR' : 'USED CAR'}
+        </span>
       </div>
 
       {/* Card Details */}
@@ -45,9 +59,16 @@ const VehicleCard = ({ car, isDark = false }) => {
             <span>{car.transmission || 'Automatic'}</span>
           </div>
 
-          <h5 className={`fw-black m-0 ${isDark ? 'text-danger' : 'text-dark'}`} style={{ fontWeight: '900', fontSize: '18px' }}>
-            ${car.price != null ? Number(car.price).toLocaleString() : 'Call for Price'}
-          </h5>
+          <div className="d-flex align-items-baseline justify-content-between">
+            <h5 className={`fw-black m-0 ${isDark ? 'text-danger' : 'text-dark'}`} style={{ fontWeight: '900', fontSize: '18px' }}>
+              {formatPrice(car.price, car.currency)}
+            </h5>
+            {car.currency && car.currency !== 'USD' && (
+              <span className="badge bg-secondary bg-opacity-10 text-secondary small" style={{ fontSize: '10px' }}>
+                {car.currency}
+              </span>
+            )}
+          </div>
         </div>
 
         <div className={`pt-3 mt-2 border-top ${isDark ? 'border-secondary' : 'border-light'}`}>

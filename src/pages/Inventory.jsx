@@ -15,10 +15,11 @@ const Inventory = () => {
 
   // Filter States
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCondition, setSelectedCondition] = useState('ALL');
   const [selectedCategory, setSelectedCategory] = useState('ALL VEHICLES');
   const [sortBy, setSortBy] = useState('default');
 
-  // Initialize category from URL query param if present (e.g. ?type=sedan)
+  // Initialize filters from URL query params if present
   useEffect(() => {
     const typeParam = searchParams.get('type');
     if (typeParam) {
@@ -28,6 +29,13 @@ const Inventory = () => {
     const makeParam = searchParams.get('make');
     if (makeParam) {
       setSearchTerm(makeParam);
+    }
+    const conditionParam = searchParams.get('condition');
+    if (conditionParam) {
+      const upperCond = conditionParam.toUpperCase();
+      if (['ALL', 'USED', 'NEW'].includes(upperCond)) {
+        setSelectedCondition(upperCond);
+      }
     }
   }, [searchParams]);
 
@@ -59,23 +67,33 @@ const Inventory = () => {
     // 1. Filter by Category Tab
     let list = filterVehiclesByTab(baseVehicles, selectedCategory);
 
-    // 2. Filter by search query (make, model, year)
+    // 2. Filter by Condition (ALL, USED, NEW)
+    if (selectedCondition && selectedCondition.toUpperCase() !== 'ALL') {
+      const targetCond = selectedCondition.toUpperCase();
+      list = list.filter(car => {
+        const carCond = (car.condition || 'Used').toUpperCase();
+        return carCond === targetCond;
+      });
+    }
+
+    // 3. Filter by search query (make, model, year)
     if (searchTerm.trim()) {
       const q = searchTerm.toLowerCase().trim();
       list = list.filter(car => 
         car.make?.toLowerCase().includes(q) ||
         car.model?.toLowerCase().includes(q) ||
-        car.year?.toString().includes(q)
+        car.year?.toString().includes(q) ||
+        (car.condition && car.condition.toLowerCase().includes(q))
       );
     }
 
-    // 3. Filter by maxPrice query param if present
+    // 4. Filter by maxPrice query param if present
     const maxPriceParam = searchParams.get('maxPrice');
     if (maxPriceParam && !isNaN(Number(maxPriceParam))) {
       list = list.filter(car => car.price <= Number(maxPriceParam));
     }
 
-    // 4. Sort
+    // 5. Sort
     if (sortBy === 'price-asc') {
       list = [...list].sort((a, b) => (a.price || 0) - (b.price || 0));
     } else if (sortBy === 'price-desc') {
@@ -87,10 +105,11 @@ const Inventory = () => {
     }
 
     return list;
-  }, [baseVehicles, selectedCategory, searchTerm, sortBy, searchParams]);
+  }, [baseVehicles, selectedCategory, selectedCondition, searchTerm, sortBy, searchParams]);
 
   const handleResetFilters = () => {
     setSearchTerm('');
+    setSelectedCondition('ALL');
     setSelectedCategory('ALL VEHICLES');
     setSortBy('default');
     setSearchParams({});
@@ -122,6 +141,8 @@ const Inventory = () => {
         <InventoryFilterBar 
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
+          selectedCondition={selectedCondition}
+          setSelectedCondition={setSelectedCondition}
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
           sortBy={sortBy}

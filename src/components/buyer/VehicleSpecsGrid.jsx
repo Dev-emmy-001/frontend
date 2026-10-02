@@ -20,6 +20,16 @@ import {
 const VehicleSpecsGrid = ({ car = {} }) => {
   const specs = [
     {
+      label: 'Condition',
+      value: (car.condition || 'Used').toUpperCase() === 'NEW' ? 'New (Brand New)' : 'Used (Pre-Owned)',
+      icon: Shield
+    },
+    {
+      label: 'Currency',
+      value: car.currency || 'USD',
+      icon: Layers
+    },
+    {
       label: 'Mileage',
       value: car.mileage != null ? `${Number(car.mileage).toLocaleString()} miles` : 'N/A',
       icon: Gauge

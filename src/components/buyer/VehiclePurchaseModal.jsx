@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, CheckCircle, ShieldCheck, CreditCard, Truck, MapPin, DollarSign } from 'lucide-react';
+import { formatPrice, getCurrencySymbol } from '../../data/mockVehicles';
 
 /**
  * VehiclePurchaseModal Component
@@ -22,8 +23,11 @@ const VehiclePurchaseModal = ({ isOpen, onClose, car = {} }) => {
 
   if (!isOpen) return null;
 
-  const depositAmount = 500;
+  const currencyCode = car.currency || 'USD';
+  const currencySymbol = getCurrencySymbol(currencyCode);
   const fullPrice = car.price != null ? Number(car.price) : 26490;
+  // Calculate deposit proportional to price or minimum base
+  const depositAmount = currencyCode === 'NGN' ? 500000 : 500;
 
   const handleConfirmReservation = () => {
     setLoading(true);
@@ -81,7 +85,9 @@ const VehiclePurchaseModal = ({ isOpen, onClose, car = {} }) => {
                     />
                     <div>
                       <h6 className="fw-bold text-dark m-0">{car.year} {car.make} {car.model}</h6>
-                      <small className="text-muted">Total Price: <strong>${fullPrice.toLocaleString()}</strong></small>
+                      <small className="text-muted">
+                        Total Price: <strong>{formatPrice(fullPrice, currencyCode)} {currencyCode}</strong>
+                      </small>
                     </div>
                   </div>
                   <div className="text-end">
@@ -125,7 +131,7 @@ const VehiclePurchaseModal = ({ isOpen, onClose, car = {} }) => {
 
                 {/* Payment Option */}
                 <div className="mb-4">
-                  <label className="form-label text-dark small fw-bold mb-2">Payment / Hold Option</label>
+                  <label className="form-label text-dark small fw-bold mb-2">Payment / Hold Option ({currencyCode})</label>
                   <div className="row g-2">
                     <div className="col-6">
                       <div 
@@ -135,7 +141,7 @@ const VehiclePurchaseModal = ({ isOpen, onClose, car = {} }) => {
                       >
                         <div className="d-flex justify-content-between align-items-center mb-1">
                           <strong className="text-dark small">Refundable Deposit</strong>
-                          <span className="badge bg-danger">${depositAmount}</span>
+                          <span className="badge bg-danger">{currencySymbol}{depositAmount.toLocaleString()}</span>
                         </div>
                         <small className="text-muted d-block" style={{ fontSize: '11px' }}>Holds this vehicle exclusively for 48 hours.</small>
                       </div>
@@ -149,7 +155,7 @@ const VehiclePurchaseModal = ({ isOpen, onClose, car = {} }) => {
                       >
                         <div className="d-flex justify-content-between align-items-center mb-1">
                           <strong className="text-dark small">Full Purchase / Escrow</strong>
-                          <span className="badge bg-dark">${fullPrice.toLocaleString()}</span>
+                          <span className="badge bg-dark">{formatPrice(fullPrice, currencyCode)}</span>
                         </div>
                         <small className="text-muted d-block" style={{ fontSize: '11px' }}>Purchase outright or connect financing loan.</small>
                       </div>
@@ -176,7 +182,7 @@ const VehiclePurchaseModal = ({ isOpen, onClose, car = {} }) => {
                     disabled={loading}
                     className="btn btn-brand-red px-4 py-2.5 fw-bold text-uppercase"
                   >
-                    {loading ? 'Processing...' : `Confirm & Place ${paymentOption === 'deposit' ? `$${depositAmount} Hold` : 'Order'}`}
+                    {loading ? 'Processing...' : `Confirm & Place ${paymentOption === 'deposit' ? `${currencySymbol}${depositAmount.toLocaleString()} Hold` : 'Order'}`}
                   </button>
                 </div>
               </div>

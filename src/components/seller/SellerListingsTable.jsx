@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Eye, Trash2, Search, PlusCircle, ExternalLink } from 'lucide-react';
+import { Eye, Trash2, Search, PlusCircle, ExternalLink, Sparkles } from 'lucide-react';
 import DeleteConfirmModal from './DeleteConfirmModal';
+import { formatPrice } from '../../data/mockVehicles';
 
 const SellerListingsTable = ({ listings = [], onDeleteListing, loading = false }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -13,10 +14,10 @@ const SellerListingsTable = ({ listings = [], onDeleteListing, loading = false }
   const [deleting, setDeleting] = useState(false);
 
   const sampleListings = [
-    { _id: '1', year: 2023, make: 'Toyota', model: 'RAV4 XLE', price: 26490, mileage: 28120, views: 320, status: 'Active', createdAt: '2025-05-20', images: ['https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=150&q=80'] },
-    { _id: '2', year: 2022, make: 'Honda', model: 'Accord EX', price: 24990, mileage: 31540, views: 280, status: 'Active', createdAt: '2025-05-18', images: ['https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=150&q=80'] },
-    { _id: '3', year: 2021, make: 'Ford', model: 'F-150 XLT', price: 33990, mileage: 45300, views: 150, status: 'Sold', createdAt: '2025-05-15', images: ['https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&w=150&q=80'] },
-    { _id: '4', year: 2023, make: 'Chevrolet', model: 'Camaro LT', price: 28990, mileage: 10860, views: 410, status: 'Active', createdAt: '2025-05-10', images: ['https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=150&q=80'] }
+    { _id: '1', year: 2023, make: 'Toyota', model: 'RAV4 XLE', condition: 'Used', currency: 'USD', price: 26490, mileage: 28120, views: 320, status: 'Active', createdAt: '2025-05-20', images: ['https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=150&q=80'] },
+    { _id: '2', year: 2022, make: 'Honda', model: 'Accord EX', condition: 'Used', currency: 'USD', price: 24990, mileage: 31540, views: 280, status: 'Active', createdAt: '2025-05-18', images: ['https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=150&q=80'] },
+    { _id: '3', year: 2024, make: 'Ford', model: 'F-150 XLT', condition: 'New', currency: 'USD', price: 33990, mileage: 45300, views: 150, status: 'Sold', createdAt: '2025-05-15', images: ['https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&w=150&q=80'] },
+    { _id: '4', year: 2023, make: 'Chevrolet', model: 'Camaro LT', condition: 'Used', currency: 'USD', price: 28990, mileage: 10860, views: 410, status: 'Active', createdAt: '2025-05-10', images: ['https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=150&q=80'] }
   ];
 
   const sourceListings = listings.length > 0 ? listings : sampleListings;
@@ -32,7 +33,8 @@ const SellerListingsTable = ({ listings = [], onDeleteListing, loading = false }
       const matchMake = item.make?.toLowerCase().includes(q);
       const matchModel = item.model?.toLowerCase().includes(q);
       const matchYear = item.year?.toString().includes(q);
-      return matchMake || matchModel || matchYear;
+      const matchCondition = item.condition?.toLowerCase().includes(q);
+      return matchMake || matchModel || matchYear || matchCondition;
     }
 
     return true;
@@ -102,6 +104,7 @@ const SellerListingsTable = ({ listings = [], onDeleteListing, loading = false }
           <thead className="table-light small text-muted text-uppercase" style={{ fontSize: '11px' }}>
             <tr>
               <th>Vehicle</th>
+              <th>Condition</th>
               <th>Price</th>
               <th>Mileage</th>
               <th>Views</th>
@@ -113,7 +116,7 @@ const SellerListingsTable = ({ listings = [], onDeleteListing, loading = false }
           <tbody className="small">
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan="7" className="text-center py-4 text-muted">
+                <td colSpan="8" className="text-center py-4 text-muted">
                   No vehicle listings found matching your search.
                 </td>
               </tr>
@@ -123,6 +126,7 @@ const SellerListingsTable = ({ listings = [], onDeleteListing, loading = false }
                   ? item.images[0] 
                   : 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=150&q=80';
                 const isAvailable = (item.status === 'Active' || item.status === 'available');
+                const isNew = (item.condition || '').toUpperCase() === 'NEW';
 
                 return (
                   <tr key={item._id}>
@@ -145,8 +149,17 @@ const SellerListingsTable = ({ listings = [], onDeleteListing, loading = false }
                       </div>
                     </td>
 
+                    <td>
+                      <span className={`badge ${isNew ? 'bg-danger text-white' : 'bg-light text-dark border'} fw-semibold`} style={{ fontSize: '10px' }}>
+                        {isNew ? 'NEW' : 'USED'}
+                      </span>
+                    </td>
+
                     <td className="fw-bold text-dark">
-                      ${Number(item.price || 0).toLocaleString()}
+                      {formatPrice(item.price, item.currency)}
+                      {item.currency && item.currency !== 'USD' && (
+                        <small className="text-muted ms-1" style={{ fontSize: '10px' }}>({item.currency})</small>
+                      )}
                     </td>
 
                     <td className="text-muted">

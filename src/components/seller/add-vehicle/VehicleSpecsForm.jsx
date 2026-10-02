@@ -1,8 +1,11 @@
 import React from 'react';
+import { CURRENCY_OPTIONS, getCurrencySymbol } from '../../../data/mockVehicles';
 
 const VehicleSpecsForm = ({ formData, setFormData }) => {
   const transmissions = ['Automatic', 'Manual', 'CVT', 'Dual-Clutch'];
   const driveTypes = ['FWD', 'AWD', 'RWD', '4WD'];
+  const currentCurrency = formData.currency || 'USD';
+  const currencySymbol = getCurrencySymbol(currentCurrency);
 
   return (
     <div className="mb-4">
@@ -11,11 +14,32 @@ const VehicleSpecsForm = ({ formData, setFormData }) => {
       </h6>
 
       <div className="row g-3 mb-3">
+        {/* Currency Selection */}
+        <div className="col-md-3">
+          <label className="form-label small fw-bold text-secondary">Currency *</label>
+          <select 
+            className="form-select form-control-custom"
+            value={currentCurrency}
+            onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
+            required
+          >
+            {CURRENCY_OPTIONS.map(c => (
+              <option key={c.code} value={c.code}>
+                {c.code} ({c.symbol}) - {c.name.split('- ')[1] || c.code}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {/* Price */}
-        <div className="col-md-4">
-          <label className="form-label small fw-bold text-secondary">Listing Price ($) *</label>
+        <div className="col-md-3">
+          <label className="form-label small fw-bold text-secondary">
+            Listing Price ({currentCurrency}) *
+          </label>
           <div className="input-group">
-            <span className="input-group-text bg-light border-end-0 fw-bold text-muted">$</span>
+            <span className="input-group-text bg-light border-end-0 fw-bold text-danger">
+              {currencySymbol}
+            </span>
             <input 
               type="number" 
               required 
@@ -29,7 +53,7 @@ const VehicleSpecsForm = ({ formData, setFormData }) => {
         </div>
 
         {/* Mileage */}
-        <div className="col-md-4">
+        <div className="col-md-3">
           <label className="form-label small fw-bold text-secondary">Mileage (mi) *</label>
           <div className="input-group">
             <input 
@@ -46,7 +70,7 @@ const VehicleSpecsForm = ({ formData, setFormData }) => {
         </div>
 
         {/* Transmission */}
-        <div className="col-md-4">
+        <div className="col-md-3">
           <label className="form-label small fw-bold text-secondary">Transmission *</label>
           <select 
             className="form-select form-control-custom"

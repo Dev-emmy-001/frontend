@@ -78,6 +78,20 @@ const VehicleBasicInfo = ({ formData, setFormData }) => {
           </select>
         </div>
 
+        {/* Condition (Used / New) */}
+        <div className="col-md-4">
+          <label className="form-label small fw-bold text-secondary">Vehicle Condition *</label>
+          <select 
+            className="form-select form-control-custom"
+            value={formData.condition || 'Used'}
+            onChange={(e) => setFormData({ ...formData, condition: e.target.value })}
+            required
+          >
+            <option value="Used">Used (Used car)</option>
+            <option value="New">New (New car)</option>
+          </select>
+        </div>
+
         {/* Fuel Type */}
         <div className="col-md-4">
           <label className="form-label small fw-bold text-secondary">Fuel Type *</label>

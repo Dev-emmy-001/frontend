@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 const InventorySearchBox = () => {
   const [filters, setFilters] = useState({
+    condition: 'ALL',
     make: '',
     model: '',
     bodyStyle: '',
@@ -13,6 +14,7 @@ const InventorySearchBox = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     const queryParams = new URLSearchParams();
+    if (filters.condition && filters.condition !== 'ALL') queryParams.set('condition', filters.condition.toLowerCase());
     if (filters.make) queryParams.set('make', filters.make);
     if (filters.bodyStyle) queryParams.set('type', filters.bodyStyle.toLowerCase());
     if (filters.maxPrice) queryParams.set('maxPrice', filters.maxPrice);
@@ -26,6 +28,20 @@ const InventorySearchBox = () => {
       <h6 className="fw-bold text-white text-uppercase small mb-3">SEARCH INVENTORY</h6>
       <form onSubmit={handleSearch}>
         <div className="row g-3 align-items-end">
+          {/* Condition: ALL, USED, NEW */}
+          <div className="col-lg col-md-6 col-12">
+            <label className="form-label small text-secondary mb-1">Condition</label>
+            <select 
+              className="form-select bg-dark text-white border-secondary py-2 small"
+              value={filters.condition}
+              onChange={(e) => setFilters({ ...filters, condition: e.target.value })}
+            >
+              <option value="ALL">All Conditions (ALL)</option>
+              <option value="USED">Used Cars (USED)</option>
+              <option value="NEW">New Cars (NEW)</option>
+            </select>
+          </div>
+
           <div className="col-lg col-md-6 col-12">
             <label className="form-label small text-secondary mb-1">Make</label>
             <select 
