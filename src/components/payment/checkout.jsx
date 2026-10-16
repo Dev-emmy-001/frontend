@@ -1,287 +1,184 @@
-import React, { useState } from 'react';
-import { useLocation, useNavigate, Link } from 'react-router-dom';
-import { ShieldCheck, CreditCard, Landmark, ArrowLeft, Lock } from 'lucide-react';
-import axios from 'axios';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowLeft, Lock, Truck, MapPin } from 'lucide-react';
 
-const Checkout = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
+// Custom Hooks & Utilities
+import { useCheckout } from './hooks/useCheckout';
+import { formatAmount } from './utils/paymentCalculations';
 
-  // Fallback vehicle object if user navigated directly without state
-  const defaultVehicle = {
-    _id: '64f1a2b3c4d5e6f7a8b9c0d1',
-    make: 'Toyota',
-    model: 'RAV4 XLE',
-    year: 2023,
-    price: 26490,
-    images: ['https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=80']
-  };
+// Modular Presentation Components
+import { OrderSummary } from './components/OrderSummary';
+import { PaymentMethodSelector } from './components/PaymentMethodSelector';
+import { CardPaymentForm } from './components/CardPaymentForm';
+import { BankTransferDetails } from './components/BankTransferDetails';
+import { PayPalDetails } from './components/PayPalDetails';
+import { SecurityBadges } from './components/SecurityBadges';
+import { OrderSuccessModal } from './components/OrderSuccessModal';
 
-  const vehicle = location.state?.vehicle || defaultVehicle;
+/**
+ * Checkout Page Component
+ * Main coordinator component for vehicle checkout, escrow reservation,
+ * and automated seller direct messaging.
+ */
+export const Checkout = () => {
+  const {
+    vehicle,
+    pricing,
+    paymentMethod,
+    setPaymentMethod,
+    deliveryType,
+    setDeliveryType,
+    cardDetails,
+    handleCardFieldChange,
+    loading,
+    error,
+    completedOrder,
+    handleProcessPayment
+  } = useCheckout();
 
-  // Pricing calculations
-  const subtotal = vehicle.price || 26490;
-  const taxRate = 0.0825; // 8.25%
-  const taxAmount = Math.round(subtotal * taxRate * 100) / 100;
-  const processingFee = 200.00;
-  const grandTotal = subtotal + taxAmount + processingFee;
-
-  // Form states
-  const [paymentMethod, setPaymentMethod] = useState('card');
-  const [cardDetails, setCardDetails] = useState({
-    cardNumber: '',
-    expiryDate: '',
-    cvv: '',
-    cardholderName: ''
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  const handleSubmitPayment = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-
-    try {
-      const token = localStorage.getItem('token');
-      const orderPayload = {
-        vehicleId: vehicle._id,
-        vehicleName: `${vehicle.year} ${vehicle.make} ${vehicle.model}`,
-        amount: grandTotal,
-        paymentMethod,
-        paymentDetails: paymentMethod === 'card' ? {
-          lastFour: cardDetails.cardNumber.slice(-4) || '4242',
-          cardholderName: cardDetails.cardholderName
-        } : {}
-      };
-
-      await axios.post('http://localhost:5000/api/orders', orderPayload, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      alert('Payment Successful! Your order has been placed.');
-      navigate('/my-orders');
-    } catch (err) {
-      // Graceful fallback for UI testing if backend server isn't running yet
-      console.warn('Backend not reachable, simulating order completion:', err);
-      alert(`Order simulated successfully for $${grandTotal.toLocaleString()}! Redirecting to orders...`);
-      navigate('/my-orders');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const currencyCode = vehicle.currency || 'USD';
+  const payButtonLabel = loading 
+    ? 'Processing Escrow Payment...' 
+    : paymentMethod === 'paypal'
+    ? `Pay with PayPal (${formatAmount(pricing.grandTotal, currencyCode)})`
+    : `Pay ${formatAmount(pricing.grandTotal, currencyCode)}`;
 
   return (
-    <div className="bg-light min-vh-100 py-5">
-      <div className="container" style={{ maxWidth: '960px' }}>
+    <div className="bg-light min-vh-100 py-5 font-sans">
+      <div className="container" style={{ maxWidth: '980px' }}>
         
-        {/* Top Back Navigation */}
-        <Link to={`/vehicle/${vehicle._id || '1'}`} className="text-secondary text-decoration-none small fw-bold d-inline-flex align-items-center gap-1 mb-4">
+        {/* Top Breadcrumb Navigation */}
+        <Link 
+          to={`/vehicle/${vehicle._id || vehicle.id || '1'}`} 
+          className="text-secondary text-decoration-none small fw-bold d-inline-flex align-items-center gap-1.5 mb-4 hover-text-danger"
+        >
           <ArrowLeft size={16} />
           <span>Back to Vehicle Details</span>
         </Link>
 
-        <h3 className="fw-black text-dark mb-4">Checkout</h3>
+        {/* Page Header */}
+        <div className="mb-4">
+          <h2 className="fw-black text-dark m-0" style={{ fontWeight: '900' }}>Vehicle Checkout</h2>
+          <p className="text-muted small mt-1">
+            Complete your verified purchase. Funds are escrow-held and the seller will be directly notified.
+          </p>
+        </div>
 
-        {error && <div className="alert alert-danger py-2 text-center small mb-4">{error}</div>}
+        {/* Error Alert */}
+        {error && (
+          <div className="alert alert-danger py-2.5 px-3 rounded-3 small mb-4 d-flex align-items-center justify-content-between">
+            <span>{error}</span>
+          </div>
+        )}
 
         <div className="row g-4">
           
-          {/* LEFT COLUMN: ORDER SUMMARY */}
-          <div className="col-lg-5">
-            <div className="bg-white p-4 rounded-4 border border-light shadow-sm sticky-top" style={{ top: '90px' }}>
-              <h5 className="fw-bold text-dark border-bottom pb-3 mb-3">Order Summary</h5>
-
-              {/* Vehicle Preview Card */}
-              <div className="d-flex gap-3 align-items-center mb-4">
-                <img 
-                  src={vehicle.images?.[0] || 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=400&q=80'} 
-                  alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`} 
-                  className="rounded-3 object-fit-cover border"
-                  style={{ width: '100px', height: '70px' }}
-                />
-                <div>
-                  <h6 className="fw-bold text-dark m-0 small">{vehicle.year} {vehicle.make} {vehicle.model}</h6>
-                  <span className="fw-black text-danger d-block mt-1">${subtotal.toLocaleString()}</span>
-                </div>
-              </div>
-
-              {/* Cost Breakdown */}
-              <div className="space-y-2 border-top border-bottom py-3 my-3 small text-secondary">
-                <div className="d-flex justify-content-between mb-2">
-                  <span>Subtotal</span>
-                  <span className="fw-bold text-dark">${subtotal.toLocaleString()}</span>
-                </div>
-                <div className="d-flex justify-content-between mb-2">
-                  <span>Tax (8.25%)</span>
-                  <span className="fw-bold text-dark">${taxAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
-                </div>
-                <div className="d-flex justify-content-between">
-                  <span>Processing Fee ⓘ</span>
-                  <span className="fw-bold text-dark">${processingFee.toFixed(2)}</span>
-                </div>
-              </div>
-
-              {/* Total Price */}
-              <div className="d-flex justify-content-between align-items-center mb-4">
-                <span className="fw-bold text-dark">Total</span>
-                <span className="display-6 fw-black text-danger">${grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-              </div>
-
-              {/* Secure Payment Note */}
-              <div className="p-3 bg-light rounded-3 border border-light d-flex align-items-start gap-2 text-muted small">
-                <ShieldCheck size={18} className="text-success flex-shrink-0 mt-0.5" />
-                <div>
-                  <strong className="text-dark d-block mb-0.5">Secure Payment</strong>
-                  <span style={{ fontSize: '11px' }}>Your payment information is encrypted and 256-bit SSL secured.</span>
-                </div>
-              </div>
-
-            </div>
+          {/* LEFT COLUMN: ORDER SUMMARY & VEHICLE PREVIEW */}
+          <div className="col-lg-5 order-lg-2">
+            <OrderSummary 
+              vehicle={vehicle} 
+              pricing={pricing} 
+              deliveryType={deliveryType} 
+            />
           </div>
 
-          {/* RIGHT COLUMN: PAYMENT METHOD & FORM */}
-          <div className="col-lg-7">
+          {/* RIGHT COLUMN: FULFILLMENT & PAYMENT SELECTION */}
+          <div className="col-lg-7 order-lg-1">
             <div className="bg-white p-4 p-md-5 rounded-4 border border-light shadow-sm">
-              <h5 className="fw-bold text-dark mb-4">Payment Method</h5>
-
-              <form onSubmit={handleSubmitPayment}>
-                
-                {/* Method Selectors */}
-                <div className="d-flex flex-column gap-2 mb-4">
-                  
-                  {/* Credit/Debit Card Option */}
-                  <div 
-                    onClick={() => setPaymentMethod('card')}
-                    className={`payment-option-card d-flex align-items-center justify-content-between ${paymentMethod === 'card' ? 'active' : ''}`}
-                  >
-                    <div className="d-flex align-items-center gap-3">
-                      <input 
-                        type="radio" 
-                        name="paymentMethod" 
-                        checked={paymentMethod === 'card'} 
-                        onChange={() => setPaymentMethod('card')}
-                        className="form-check-input"
-                      />
-                      <span className="fw-bold text-dark small">Credit / Debit Card</span>
-                    </div>
-                    <div className="d-flex gap-1 align-items-center text-muted">
-                      <CreditCard size={20} />
+              
+              {/* Step 1: Fulfillment Option */}
+              <div className="mb-4 pb-3 border-bottom border-light">
+                <label className="form-label text-dark fw-bold small mb-2 text-uppercase" style={{ fontSize: '11px', letterSpacing: '0.5px' }}>
+                  1. Fulfillment Method
+                </label>
+                <div className="row g-2">
+                  <div className="col-6">
+                    <div 
+                      onClick={() => setDeliveryType('Home Delivery')}
+                      className={`p-3 rounded-3 border cursor-pointer transition-all ${deliveryType === 'Home Delivery' ? 'border-danger bg-danger bg-opacity-10' : 'border-light bg-light'}`}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <div className="d-flex align-items-center gap-2 mb-1">
+                        <Truck size={16} className={deliveryType === 'Home Delivery' ? 'text-danger' : 'text-muted'} />
+                        <strong className="text-dark small">Home Delivery</strong>
+                      </div>
+                      <small className="text-muted d-block" style={{ fontSize: '11px' }}>Direct to driveway with 7-day trial</small>
                     </div>
                   </div>
 
-                  {/* Bank Transfer Option */}
-                  <div 
-                    onClick={() => setPaymentMethod('bank')}
-                    className={`payment-option-card d-flex align-items-center justify-content-between ${paymentMethod === 'bank' ? 'active' : ''}`}
-                  >
-                    <div className="d-flex align-items-center gap-3">
-                      <input 
-                        type="radio" 
-                        name="paymentMethod" 
-                        checked={paymentMethod === 'bank'} 
-                        onChange={() => setPaymentMethod('bank')}
-                        className="form-check-input"
-                      />
-                      <span className="fw-bold text-dark small">Bank Transfer</span>
+                  <div className="col-6">
+                    <div 
+                      onClick={() => setDeliveryType('Dealership Pickup')}
+                      className={`p-3 rounded-3 border cursor-pointer transition-all ${deliveryType === 'Dealership Pickup' ? 'border-danger bg-danger bg-opacity-10' : 'border-light bg-light'}`}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <div className="d-flex align-items-center gap-2 mb-1">
+                        <MapPin size={16} className={deliveryType === 'Dealership Pickup' ? 'text-danger' : 'text-muted'} />
+                        <strong className="text-dark small">Dealership Pickup</strong>
+                      </div>
+                      <small className="text-muted d-block" style={{ fontSize: '11px' }}>Pick up at seller's local showroom</small>
                     </div>
-                    <Landmark size={20} className="text-muted" />
                   </div>
-
-                  {/* PayPal Option */}
-                  <div 
-                    onClick={() => setPaymentMethod('paypal')}
-                    className={`payment-option-card d-flex align-items-center justify-content-between ${paymentMethod === 'paypal' ? 'active' : ''}`}
-                  >
-                    <div className="d-flex align-items-center gap-3">
-                      <input 
-                        type="radio" 
-                        name="paymentMethod" 
-                        checked={paymentMethod === 'paypal'} 
-                        onChange={() => setPaymentMethod('paypal')}
-                        className="form-check-input"
-                      />
-                      <span className="fw-bold text-dark small">PayPal</span>
-                    </div>
-                    <span className="fw-black italic text-primary" style={{ fontSize: '14px' }}>PayPal</span>
-                  </div>
-
                 </div>
+              </div>
 
-                {/* Card Input Fields (When 'card' selected) */}
+              {/* Step 2: Payment Method */}
+              <h5 className="fw-bold text-dark mb-3 small text-uppercase" style={{ fontSize: '11px', letterSpacing: '0.5px' }}>
+                2. Select Payment Method
+              </h5>
+
+              <form onSubmit={handleProcessPayment}>
+                {/* Method Selector Tabs */}
+                <PaymentMethodSelector 
+                  selectedMethod={paymentMethod}
+                  onSelectMethod={setPaymentMethod}
+                />
+
+                {/* Sub-form: Credit/Debit Card */}
                 {paymentMethod === 'card' && (
-                  <div className="space-y-3 pt-2">
-                    
-                    <div className="mb-3">
-                      <label className="form-label text-dark fw-bold small mb-1">Card Number</label>
-                      <input 
-                        type="text" required maxLength="19"
-                        className="form-control form-control-custom" 
-                        placeholder="1234 5678 9012 3456"
-                        value={cardDetails.cardNumber}
-                        onChange={(e) => setCardDetails({ ...cardDetails, cardNumber: e.target.value })}
-                      />
-                    </div>
-
-                    <div className="row g-3 mb-3">
-                      <div className="col-6">
-                        <label className="form-label text-dark fw-bold small mb-1">Expiry Date</label>
-                        <input 
-                          type="text" required placeholder="MM/YY" maxLength="5"
-                          className="form-control form-control-custom" 
-                          value={cardDetails.expiryDate}
-                          onChange={(e) => setCardDetails({ ...cardDetails, expiryDate: e.target.value })}
-                        />
-                      </div>
-                      <div className="col-6">
-                        <label className="form-label text-dark fw-bold small mb-1">CVV</label>
-                        <input 
-                          type="password" required placeholder="123" maxLength="4"
-                          className="form-control form-control-custom" 
-                          value={cardDetails.cvv}
-                          onChange={(e) => setCardDetails({ ...cardDetails, cvv: e.target.value })}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="mb-4">
-                      <label className="form-label text-dark fw-bold small mb-1">Cardholder Name</label>
-                      <input 
-                        type="text" required
-                        className="form-control form-control-custom" 
-                        placeholder="John Doe"
-                        value={cardDetails.cardholderName}
-                        onChange={(e) => setCardDetails({ ...cardDetails, cardholderName: e.target.value })}
-                      />
-                    </div>
-
-                  </div>
+                  <CardPaymentForm 
+                    cardDetails={cardDetails}
+                    onChangeField={handleCardFieldChange}
+                  />
                 )}
 
-                {/* Bank / PayPal Note */}
-                {paymentMethod !== 'card' && (
-                  <div className="p-3 bg-light rounded-3 text-muted small my-4 text-center">
-                    You will be redirected to complete your payment instructions securely.
-                  </div>
+                {/* Sub-form: Bank Wire / Transfer */}
+                {paymentMethod === 'bank' && (
+                  <BankTransferDetails referenceId={`REF-${Math.floor(100000 + Math.random() * 900000)}`} />
+                )}
+
+                {/* Sub-form: PayPal */}
+                {paymentMethod === 'paypal' && (
+                  <PayPalDetails />
                 )}
 
                 {/* Submit Action Button */}
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   disabled={loading}
-                  className="btn btn-brand-red w-100 py-3 fw-bold text-uppercase d-flex align-items-center justify-content-center gap-2"
+                  className="btn btn-brand-red w-100 py-3 fw-bold text-uppercase d-flex align-items-center justify-content-center gap-2 shadow-sm animate-btn mt-3"
+                  style={{ letterSpacing: '0.5px' }}
                 >
                   <Lock size={16} />
-                  <span>{loading ? 'Processing Payment...' : `Pay $${grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}</span>
+                  <span>{payButtonLabel}</span>
                 </button>
 
+                {/* Trust Badges */}
+                <SecurityBadges />
               </form>
+
             </div>
           </div>
 
         </div>
 
       </div>
+
+      {/* Confirmation Modal upon Successful Order */}
+      <OrderSuccessModal 
+        order={completedOrder} 
+        onClose={() => {}} 
+      />
     </div>
   );
 };

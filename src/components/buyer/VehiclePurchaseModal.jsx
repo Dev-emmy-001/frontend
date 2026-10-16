@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { X, CheckCircle, ShieldCheck, CreditCard, Truck, MapPin, DollarSign } from 'lucide-react';
 import { formatPrice, getCurrencySymbol } from '../../data/mockVehicles';
 
+import { placeOrder } from '../../services/orderService';
+
 /**
  * VehiclePurchaseModal Component
  * Interactive vehicle reservation / purchase deposit modal.
@@ -29,12 +31,33 @@ const VehiclePurchaseModal = ({ isOpen, onClose, car = {} }) => {
   // Calculate deposit proportional to price or minimum base
   const depositAmount = currencyCode === 'NGN' ? 500000 : 500;
 
-  const handleConfirmReservation = () => {
+  const handleConfirmReservation = async () => {
+    if (paymentOption === 'full') {
+      onClose();
+      navigate('/checkout', { state: { vehicle: car } });
+      return;
+    }
+
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      await placeOrder({
+        vehicle: car,
+        pricing: {
+          subtotal: depositAmount,
+          taxAmount: 0,
+          processingFee: 0,
+          grandTotal: depositAmount
+        },
+        paymentMethod: 'Credit/Debit Card',
+        deliveryType: deliveryOption === 'delivery' ? 'Home Delivery' : 'Dealership Pickup'
+      });
       setStep(2);
-    }, 1000);
+    } catch (e) {
+      console.error('Reservation order error:', e);
+      setStep(2);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleFinish = () => {

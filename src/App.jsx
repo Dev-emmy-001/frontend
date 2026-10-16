@@ -42,7 +42,7 @@ import AdminRevenue from './pages/admin/AdminRevenue';
 
 
 // payment section
-import Checkout from './components/payment/checkout';
+import Checkout from './components/payment/Checkout';
 
 function App() {
   return (

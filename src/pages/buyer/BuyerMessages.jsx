@@ -1,51 +1,57 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import BuyerSidebar from '../../components/buyer/BuyerSidebar';
 import BuyerHeader from '../../components/buyer/BuyerHeader';
-import { MessageSquare, Send, Search, CheckCheck } from 'lucide-react';
+import { MessageSquare, Send, Search, CheckCheck, ShoppingBag } from 'lucide-react';
+import { getLocalConversations } from '../../services/orderService';
 
 /**
  * BuyerMessages Page
- * Renders buyer messaging with dealership staff and private sellers.
+ * Renders buyer messaging with dealership staff and private sellers,
+ * displaying automated purchase notifications and direct chat replies.
  */
 const BuyerMessages = () => {
   const [user] = useState(JSON.parse(localStorage.getItem('user')) || {});
   const [activeChat, setActiveChat] = useState(0);
   const [inputText, setInputText] = useState('');
+  const [chats, setChats] = useState([]);
 
-  const [chats, setChats] = useState([
-    {
-      id: 1,
-      name: 'Summit Auto Group (Official)',
-      car: '2023 Toyota RAV4 XLE',
+  const loadChats = () => {
+    const raw = getLocalConversations();
+    // Normalize chats for buyer view
+    const formatted = raw.map(c => ({
+      id: c.id,
+      name: c.sellerName || 'Summit Auto Group (Official)',
+      car: c.vehicle || '2023 Toyota RAV4 XLE',
       avatar: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=100&q=80',
-      messages: [
-        { sender: 'seller', text: 'Hello! Thank you for inquiring about the 2023 Toyota RAV4 XLE. It is available for test driving today.', time: '10:30 AM' },
-        { sender: 'buyer', text: 'Great! Is the clean CARFAX report available?', time: '10:35 AM' },
-        { sender: 'seller', text: 'Yes, it is a single-owner certified vehicle with complete service records. Would you like to schedule a viewing?', time: '10:38 AM' }
-      ]
-    },
-    {
-      id: 2,
-      name: 'Metro Honda Dealership',
-      car: '2022 Honda Accord EX',
-      avatar: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=100&q=80',
-      messages: [
-        { sender: 'seller', text: 'We have received your reservation hold on the Honda Accord.', time: 'Yesterday' }
-      ]
-    }
-  ]);
+      messages: c.messages || []
+    }));
+    setChats(formatted);
+  };
+
+  useEffect(() => {
+    loadChats();
+
+    const handleUpdate = () => loadChats();
+    window.addEventListener('motors_message_received', handleUpdate);
+    window.addEventListener('motors_order_placed', handleUpdate);
+
+    return () => {
+      window.removeEventListener('motors_message_received', handleUpdate);
+      window.removeEventListener('motors_order_placed', handleUpdate);
+    };
+  }, []);
 
   const handleSendMessage = (e) => {
     e.preventDefault();
-    if (!inputText.trim()) return;
+    if (!inputText.trim() || !chats[activeChat]) return;
 
     const newMsg = {
       sender: 'buyer',
-      text: inputText,
+      text: inputText.trim(),
       time: 'Just now'
     };
 
-    setChats(prev => prev.map((c, idx) => {
+    const updated = chats.map((c, idx) => {
       if (idx === activeChat) {
         return {
           ...c,
@@ -53,12 +59,19 @@ const BuyerMessages = () => {
         };
       }
       return c;
-    }));
+    });
 
+    setChats(updated);
+    localStorage.setItem('motors_conversations', JSON.stringify(updated));
     setInputText('');
   };
 
-  const current = chats[activeChat];
+  const current = chats[activeChat] || {
+    name: 'Customer Support',
+    car: 'Inquiries',
+    avatar: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=100&q=80',
+    messages: []
+  };
 
   return (
     <div className="dashboard-layout bg-light min-vh-100 d-flex font-sans">
@@ -88,15 +101,15 @@ const BuyerMessages = () => {
             <div className="overflow-y-auto flex-grow-1">
               {chats.map((chat, idx) => (
                 <div
-                  key={chat.id}
+                  key={chat.id || idx}
                   onClick={() => setActiveChat(idx)}
-                  className={`p-3 border-bottom border-light cursor-pointer transition-all d-flex gap-3 align-items-center ${activeChat === idx ? 'bg-light' : 'hover-bg-light'}`}
+                  className={`p-3 border-bottom border-light cursor-pointer transition-all d-flex gap-3 align-items-center ${activeChat === idx ? 'bg-light border-start border-danger border-3' : 'hover-bg-light'}`}
                   style={{ cursor: 'pointer' }}
                 >
-                  <img src={chat.avatar} alt="avatar" className="rounded-circle object-fit-cover" style={{ width: '44px', height: '44px' }} />
+                  <img src={chat.avatar} alt="avatar" className="rounded-circle object-fit-cover shadow-xs border" style={{ width: '44px', height: '44px' }} />
                   <div className="flex-grow-1 overflow-hidden">
                     <h6 className="fw-bold text-dark m-0 small text-truncate">{chat.name}</h6>
-                    <small className="text-muted d-block text-truncate" style={{ fontSize: '11px' }}>{chat.car}</small>
+                    <small className="text-danger fw-semibold d-block text-truncate" style={{ fontSize: '11px' }}>{chat.car}</small>
                     <small className="text-secondary d-block text-truncate" style={{ fontSize: '11px' }}>
                       {chat.messages[chat.messages.length - 1]?.text}
                     </small>
@@ -110,7 +123,7 @@ const BuyerMessages = () => {
           <div className="col-md-8 d-flex flex-column h-100">
             {/* Window Header */}
             <div className="p-3 border-bottom border-light d-flex align-items-center gap-3 bg-light bg-opacity-50">
-              <img src={current.avatar} alt="avatar" className="rounded-circle object-fit-cover" style={{ width: '40px', height: '40px' }} />
+              <img src={current.avatar} alt="avatar" className="rounded-circle object-fit-cover shadow-xs border" style={{ width: '40px', height: '40px' }} />
               <div>
                 <h6 className="fw-bold text-dark m-0 small">{current.name}</h6>
                 <small className="text-danger fw-semibold" style={{ fontSize: '11px' }}>Regarding: {current.car}</small>
@@ -121,14 +134,29 @@ const BuyerMessages = () => {
             <div className="p-4 overflow-y-auto flex-grow-1 d-flex flex-column gap-3 bg-light bg-opacity-25">
               {current.messages.map((msg, idx) => {
                 const isBuyer = msg.sender === 'buyer';
+                const isOrderNotice = msg.isOrderAlert || msg.text?.includes('Car Purchased');
+
                 return (
                   <div 
                     key={idx} 
                     className={`d-flex flex-column ${isBuyer ? 'align-items-end' : 'align-items-start'}`}
                   >
+                    {isOrderNotice && (
+                      <div className="d-flex align-items-center gap-1.5 text-success small fw-bold mb-1">
+                        <ShoppingBag size={14} />
+                        <span style={{ fontSize: '11px' }}>Order Placement Confirmation</span>
+                      </div>
+                    )}
+
                     <div 
-                      className={`p-3 rounded-3 max-w-75 shadow-xs ${isBuyer ? 'bg-danger text-white' : 'bg-white text-dark border border-light'}`}
-                      style={{ maxWidth: '75%', fontSize: '13px' }}
+                      className={`p-3 rounded-3 max-w-75 shadow-xs ${
+                        isOrderNotice 
+                          ? 'bg-success bg-opacity-10 text-dark border border-success border-opacity-25' 
+                          : isBuyer 
+                          ? 'btn-brand-red text-white' 
+                          : 'bg-white text-dark border border-light'
+                      }`}
+                      style={{ maxWidth: '78%', fontSize: '13px', lineHeight: '1.4' }}
                     >
                       {msg.text}
                     </div>
