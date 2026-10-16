@@ -44,10 +44,14 @@ import AdminRevenue from './pages/admin/AdminRevenue';
 // payment section
 import Checkout from './components/payment/Checkout';
 
+// Real-Time Currency Engine Context
+import { CurrencyProvider } from './context/CurrencyContext';
+
 function App() {
   return (
-    <Router>
-      <div className="app-container">
+    <CurrencyProvider>
+      <Router>
+        <div className="app-container">
         <Routes>
           {/* Public Website Routes */}
           <Route path="/" element={<Home />} />
@@ -100,6 +104,7 @@ function App() {
         </Routes>
       </div>
     </Router>
+  </CurrencyProvider>
   );
 }
 

@@ -1,6 +1,8 @@
 import React from 'react';
-import { Search, SlidersHorizontal } from 'lucide-react';
+import { Search, SlidersHorizontal, MapPin, Ship, X, Globe, DollarSign } from 'lucide-react';
 import { VEHICLE_CATEGORIES, VEHICLE_CONDITIONS } from '../../data/mockVehicles';
+import { VEHICLE_ORIGIN_LOCATIONS, TARGET_DESTINATION_PORTS } from '../../data/globalShippingData';
+import { useCurrency } from '../../context/CurrencyContext';
 
 const InventoryFilterBar = ({
   searchTerm,
@@ -9,14 +11,28 @@ const InventoryFilterBar = ({
   setSelectedCondition,
   selectedCategory,
   setSelectedCategory,
+  selectedOrigin = 'ALL',
+  setSelectedOrigin,
+  selectedPort = 'ALL',
+  setSelectedPort,
   sortBy,
   setSortBy,
-  totalResults
+  totalResults,
+  onResetFilters
 }) => {
+  const { currency, currencyInfo } = useCurrency();
+
+  const hasActiveFilters = 
+    searchTerm || 
+    (selectedCondition && selectedCondition !== 'ALL') || 
+    (selectedCategory && selectedCategory !== 'ALL VEHICLES') ||
+    (selectedOrigin && selectedOrigin !== 'ALL') ||
+    (selectedPort && selectedPort !== 'ALL');
+
   return (
-    <div className="bg-black border border-secondary p-4 rounded-3 mb-4 shadow-lg">
+    <div className="bg-black border border-secondary p-4 rounded-3 mb-4 shadow-lg font-sans">
       
-      {/* Top Bar: Condition Selector (ALL, USED, NEW) + Search + Sort */}
+      {/* Row 1: Condition Buttons + Keyword Search + Sort */}
       <div className="row g-3 align-items-center mb-3">
         
         {/* Condition Filter Button Group: ALL, USED, NEW */}
@@ -84,25 +100,101 @@ const InventoryFilterBar = ({
 
       </div>
 
-      {/* Category Filter Pills & Results Counter */}
-      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 pt-3 border-top border-secondary">
-        <div className="d-flex flex-wrap gap-2">
+      {/* Row 2: SMART GLOBAL SEARCH & FILTERING (Vehicle Location + Destination Port) */}
+      <div className="p-3 bg-dark bg-opacity-75 rounded-3 border border-secondary mb-3">
+        <div className="d-flex align-items-center justify-content-between mb-2">
+          <span className="text-white small fw-bold text-uppercase d-flex align-items-center gap-1.5">
+            <Globe size={15} className="text-danger" /> Smart Global Logistics & Port Filtering
+          </span>
+          <span className="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-50 small">
+            Live Cross-Border Delivery
+          </span>
+        </div>
+
+        <div className="row g-2">
+          {/* Current Vehicle Location (Origin Country) */}
+          <div className="col-12 col-md-6">
+            <label className="form-label text-secondary small mb-1 d-flex align-items-center gap-1">
+              <MapPin size={13} className="text-danger" /> Current Vehicle Location
+            </label>
+            <select
+              className="form-select bg-black text-white border-secondary small py-2"
+              value={selectedOrigin}
+              onChange={(e) => setSelectedOrigin(e.target.value)}
+            >
+              {VEHICLE_ORIGIN_LOCATIONS.map((loc) => (
+                <option key={loc.id} value={loc.id}>
+                  {loc.flag} {loc.label} {loc.id !== 'ALL' ? `(${loc.name})` : ''}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Target Destination Port */}
+          <div className="col-12 col-md-6">
+            <label className="form-label text-secondary small mb-1 d-flex align-items-center gap-1">
+              <Ship size={13} className="text-info" /> Target Destination Port
+            </label>
+            <select
+              className="form-select bg-black text-white border-secondary small py-2"
+              value={selectedPort}
+              onChange={(e) => setSelectedPort(e.target.value)}
+            >
+              {TARGET_DESTINATION_PORTS.map((port) => (
+                <option key={port.id} value={port.id}>
+                  {port.flag} {port.name} {port.country !== 'Global' ? `— ${port.country}` : ''}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Selected Port Routing Advisory Pill */}
+        {selectedPort && selectedPort !== 'ALL' && (
+          <div className="mt-2.5 pt-2 border-top border-secondary text-info small d-flex align-items-center justify-content-between flex-wrap gap-2" style={{ fontSize: '11px' }}>
+            <span>
+              🚢 Showing vehicles eligible for Ro-Ro & Container shipment to <strong>{selectedPort}</strong>.
+            </span>
+            <span className="text-white-50">
+              Prices converted live in <strong>{currencyInfo.code} ({currencyInfo.symbol})</strong>
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Row 3: Category Filter Pills, Active Chips & Results Counter */}
+      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 pt-2 border-top border-secondary">
+        <div className="d-flex flex-wrap align-items-center gap-2">
           {VEHICLE_CATEGORIES.map((cat) => (
             <button
               key={cat}
               type="button"
               onClick={() => setSelectedCategory(cat)}
-              className={`btn btn-sm ${selectedCategory === cat ? 'btn-danger fw-bold' : 'btn-outline-secondary text-white-50'} rounded-pill px-3`}
+              className={`btn btn-sm ${selectedCategory === cat ? 'btn-danger fw-bold shadow-xs' : 'btn-outline-secondary text-white-50'} rounded-pill px-3`}
               style={{ fontSize: '12px' }}
             >
               {cat}
             </button>
           ))}
+
+          {/* Reset Filters button if any active */}
+          {hasActiveFilters && onResetFilters && (
+            <button
+              type="button"
+              onClick={onResetFilters}
+              className="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1 rounded-pill px-2.5 py-1"
+              style={{ fontSize: '11px' }}
+              title="Reset all search and location filters"
+            >
+              <X size={12} /> Clear Filters
+            </button>
+          )}
         </div>
 
         {/* Results Counter */}
         <div className="text-secondary small">
           Showing <span className="text-white fw-bold">{totalResults}</span> {selectedCondition !== 'ALL' ? selectedCondition.toLowerCase() : ''} vehicles
+          {selectedOrigin !== 'ALL' && <span className="text-danger ms-1">• in {selectedOrigin}</span>}
         </div>
       </div>
     </div>

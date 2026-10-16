@@ -5,6 +5,7 @@ import { ArrowLeft, Lock, Truck, MapPin } from 'lucide-react';
 // Custom Hooks & Utilities
 import { useCheckout } from './hooks/useCheckout';
 import { formatAmount } from './utils/paymentCalculations';
+import { useCurrency } from '../../context/CurrencyContext';
 
 // Modular Presentation Components
 import { OrderSummary } from './components/OrderSummary';
@@ -36,12 +37,13 @@ export const Checkout = () => {
     handleProcessPayment
   } = useCheckout();
 
-  const currencyCode = vehicle.currency || 'USD';
+  const { formatPrice } = useCurrency();
+
   const payButtonLabel = loading 
     ? 'Processing Escrow Payment...' 
     : paymentMethod === 'paypal'
-    ? `Pay with PayPal (${formatAmount(pricing.grandTotal, currencyCode)})`
-    : `Pay ${formatAmount(pricing.grandTotal, currencyCode)}`;
+    ? `Pay with PayPal (${formatPrice(pricing.grandTotal)})`
+    : `Pay ${formatPrice(pricing.grandTotal)}`;
 
   return (
     <div className="bg-light min-vh-100 py-5 font-sans">

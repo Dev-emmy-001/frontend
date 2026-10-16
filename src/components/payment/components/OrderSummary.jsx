@@ -1,23 +1,32 @@
 import React from 'react';
-import { ShieldCheck, Truck, MapPin } from 'lucide-react';
-import { formatAmount } from '../utils/paymentCalculations';
+import { ShieldCheck, Truck, MapPin, Globe } from 'lucide-react';
+import { useCurrency } from '../../../context/CurrencyContext';
 
 /**
  * OrderSummary Component
  * Displays itemized cost breakdown, vehicle preview, and fulfillment badge
+ * with real-time currency conversion.
  */
 export const OrderSummary = ({ vehicle = {}, pricing = {}, deliveryType = 'Home Delivery' }) => {
+  const { formatPrice, currency, currencyInfo } = useCurrency();
   const { subtotal = 0, taxAmount = 0, processingFee = 0, grandTotal = 0 } = pricing;
   const vehicleTitle = `${vehicle.year || ''} ${vehicle.make || ''} ${vehicle.model || 'Vehicle'}`.trim();
   const vehicleImage = vehicle.images?.[0] || 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=400&q=80';
-  const currencyCode = vehicle.currency || 'USD';
+  const isNonUsd = currency !== 'USD';
+
+  const originLocation = vehicle.location || {
+    country: 'USA',
+    city: 'Houston, TX',
+    flag: '🇺🇸',
+    portOfLoading: 'Port of Houston'
+  };
 
   return (
-    <div className="bg-white p-4 rounded-4 border border-light shadow-sm sticky-top" style={{ top: '90px' }}>
+    <div className="bg-white p-4 rounded-4 border border-light shadow-sm sticky-top font-sans" style={{ top: '90px' }}>
       <h5 className="fw-bold text-dark border-bottom pb-3 mb-3 d-flex justify-content-between align-items-center">
         <span>Order Summary</span>
-        <span className="badge bg-light text-secondary border fw-semibold" style={{ fontSize: '11px' }}>
-          {currencyCode}
+        <span className="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 fw-bold" style={{ fontSize: '11px' }}>
+          {currencyInfo.flag} {currencyInfo.code} ({currencyInfo.symbol})
         </span>
       </h5>
 
@@ -32,7 +41,7 @@ export const OrderSummary = ({ vehicle = {}, pricing = {}, deliveryType = 'Home 
         <div className="overflow-hidden">
           <h6 className="fw-bold text-dark m-0 small text-truncate">{vehicleTitle}</h6>
           <span className="fw-black text-danger d-block mt-1">
-            {formatAmount(subtotal, currencyCode)}
+            {formatPrice(subtotal)}
           </span>
           <small className="text-muted d-flex align-items-center gap-1 mt-1" style={{ fontSize: '11px' }}>
             {deliveryType === 'Home Delivery' ? <Truck size={12} className="text-danger" /> : <MapPin size={12} className="text-primary" />}
@@ -41,38 +50,51 @@ export const OrderSummary = ({ vehicle = {}, pricing = {}, deliveryType = 'Home 
         </div>
       </div>
 
-      {/* Seller Note */}
-      {vehicle.seller?.name && (
-        <div className="p-2 mb-3 bg-light rounded-2 text-muted small" style={{ fontSize: '11px' }}>
-          Sold & Fulfilled by: <strong className="text-dark">{vehicle.seller.name}</strong>
+      {/* Origin Location & Seller Note */}
+      <div className="p-2.5 mb-3 bg-light rounded-3 border border-light small" style={{ fontSize: '11px' }}>
+        <div className="d-flex align-items-center gap-1.5 text-dark mb-1">
+          <Globe size={13} className="text-danger" />
+          <span>Origin: <strong>{originLocation.city}, {originLocation.country}</strong> ({originLocation.portOfLoading})</span>
         </div>
-      )}
+        {vehicle.seller?.name && (
+          <div className="text-muted">
+            Sold & Fulfilled by: <strong className="text-dark">{vehicle.seller.name}</strong>
+          </div>
+        )}
+      </div>
 
-      {/* Cost Breakdown */}
+      {/* Cost Breakdown in Converted Currency */}
       <div className="space-y-2 border-top border-bottom py-3 my-3 small text-secondary">
         <div className="d-flex justify-content-between mb-2">
           <span>Vehicle Price</span>
-          <span className="fw-bold text-dark">{formatAmount(subtotal, currencyCode)}</span>
+          <span className="fw-bold text-dark">{formatPrice(subtotal)}</span>
         </div>
         <div className="d-flex justify-content-between mb-2">
           <span>Sales Tax (8.25%)</span>
-          <span className="fw-bold text-dark">{formatAmount(taxAmount, currencyCode)}</span>
+          <span className="fw-bold text-dark">{formatPrice(taxAmount)}</span>
         </div>
         <div className="d-flex justify-content-between">
           <span>Escrow & Processing Fee</span>
-          <span className="fw-bold text-dark">{formatAmount(processingFee, currencyCode)}</span>
+          <span className="fw-bold text-dark">{formatPrice(processingFee)}</span>
         </div>
       </div>
 
       {/* Total Price */}
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="d-flex justify-content-between align-items-center mb-3">
         <div>
           <span className="fw-bold text-dark d-block">Grand Total</span>
           <small className="text-muted" style={{ fontSize: '11px' }}>Includes escrow hold guarantee</small>
         </div>
-        <span className="display-6 fw-black text-danger fs-3">
-          {formatAmount(grandTotal, currencyCode)}
-        </span>
+        <div className="text-end">
+          <span className="display-6 fw-black text-danger fs-3 d-block">
+            {formatPrice(grandTotal)}
+          </span>
+          {isNonUsd && (
+            <small className="text-muted font-monospace" style={{ fontSize: '11px' }}>
+              (≈ ${grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD)
+            </small>
+          )}
+        </div>
       </div>
 
       {/* Security Assurance */}
@@ -81,7 +103,7 @@ export const OrderSummary = ({ vehicle = {}, pricing = {}, deliveryType = 'Home 
         <div>
           <strong className="text-dark d-block mb-0.5">Escrow-Backed Checkout</strong>
           <span style={{ fontSize: '11px' }}>
-            Funds are securely held in escrow until vehicle delivery and physical inspection are confirmed.
+            Funds are securely held in escrow until vehicle arrival, port handover, and physical inspection are confirmed.
           </span>
         </div>
       </div>

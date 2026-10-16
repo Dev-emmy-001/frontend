@@ -1,34 +1,33 @@
 import React from 'react';
-import { MapPin, Phone } from 'lucide-react';
+import { MapPin, Phone, Globe } from 'lucide-react';
 import { siteConfig } from '../../data/siteConfig';
+import CurrencySwitcher from './CurrencySwitcher';
 
 const TopBar = () => {
   return (
-    <div className="bg-black text-white-50 py-2 border-bottom border-secondary small marquee-container">
-      <div className="marquee-content d-flex gap-5 align-items-center">
-        <span className="d-flex align-items-center gap-1 text-white-50">
-          <MapPin size={14} className="text-danger" /> {siteConfig.contact.address}
-        </span>
-        <span className="d-flex align-items-center gap-1 text-white-50">
-          <Phone size={14} className="text-danger" /> {siteConfig.contact.phone}
-        </span>
-        <span>Sales: {siteConfig.contact.hours.sales.shortWeekday}</span>
-        <span>|</span>
-        <span>Service: {siteConfig.contact.hours.service.shortWeekday}</span>
-        <div className="d-flex gap-2 ms-2">
-          {/* Facebook */}
-          <a href={siteConfig.socialLinks.facebook} className="text-white-50 hover-text-white" aria-label="Facebook">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg>
-          </a>
-          {/* Instagram */}
-          <a href={siteConfig.socialLinks.instagram} className="text-white-50 hover-text-white" aria-label="Instagram">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" x2="17.51" y1="6.5" y2="6.5" /></svg>
-          </a>
-          {/* Youtube */}
-          <a href={siteConfig.socialLinks.youtube} className="text-white-50 hover-text-white" aria-label="YouTube">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17" /><path d="m10 15 5-3-5-3z" /></svg>
-          </a>
+    <div className="bg-black text-white-50 py-1.5 border-bottom border-secondary small">
+      <div className="container d-flex flex-wrap justify-content-between align-items-center gap-2">
+        
+        {/* Left: Global Contact / Locations */}
+        <div className="d-flex align-items-center gap-3 text-white-50 small flex-wrap">
+          <span className="d-inline-flex align-items-center gap-1">
+            <MapPin size={13} className="text-danger" />
+            <span className="text-truncate" style={{ maxWidth: '280px' }}>{siteConfig.contact.address}</span>
+          </span>
+          <span className="d-none d-lg-inline text-secondary">|</span>
+          <span className="d-none d-md-inline-flex align-items-center gap-1">
+            <Phone size={13} className="text-danger" /> {siteConfig.contact.phone}
+          </span>
+          <span className="d-none d-xl-inline text-white-50">
+            • Worldwide Port Shipping & Customs Escrow
+          </span>
         </div>
+
+        {/* Right: Currency Engine Switcher & Location Detector */}
+        <div className="d-flex align-items-center gap-2.5 ms-auto">
+          <CurrencySwitcher isDark={true} showCountry={true} />
+        </div>
+
       </div>
     </div>
   );

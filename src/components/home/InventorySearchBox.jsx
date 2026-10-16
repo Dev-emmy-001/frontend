@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { MapPin, Ship, Globe, Search } from 'lucide-react';
+import { VEHICLE_ORIGIN_LOCATIONS, TARGET_DESTINATION_PORTS } from '../../data/globalShippingData';
 
 const InventorySearchBox = () => {
   const [filters, setFilters] = useState({
     condition: 'ALL',
+    origin: 'ALL',
+    port: 'ALL',
     make: '',
-    model: '',
     bodyStyle: '',
     maxPrice: ''
   });
@@ -15,6 +18,8 @@ const InventorySearchBox = () => {
     e.preventDefault();
     const queryParams = new URLSearchParams();
     if (filters.condition && filters.condition !== 'ALL') queryParams.set('condition', filters.condition.toLowerCase());
+    if (filters.origin && filters.origin !== 'ALL') queryParams.set('origin', filters.origin);
+    if (filters.port && filters.port !== 'ALL') queryParams.set('port', filters.port);
     if (filters.make) queryParams.set('make', filters.make);
     if (filters.bodyStyle) queryParams.set('type', filters.bodyStyle.toLowerCase());
     if (filters.maxPrice) queryParams.set('maxPrice', filters.maxPrice);
@@ -24,9 +29,57 @@ const InventorySearchBox = () => {
   };
 
   return (
-    <div className="bg-black bg-opacity-90 border border-secondary p-4 rounded-3 shadow-lg mt-4" style={{ maxWidth: '100%' }}>
-      <h6 className="fw-bold text-white text-uppercase small mb-3">SEARCH INVENTORY</h6>
+    <div className="bg-black bg-opacity-90 border border-secondary p-4 rounded-3 shadow-lg mt-4 font-sans" style={{ maxWidth: '100%' }}>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h6 className="fw-bold text-white text-uppercase small m-0 d-flex align-items-center gap-1.5">
+          <Globe size={16} className="text-danger" /> SMART GLOBAL SEARCH & INVENTORY
+        </h6>
+        <span className="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-50 small d-none d-sm-inline-block">
+          Worldwide Port Shipping
+        </span>
+      </div>
+
       <form onSubmit={handleSearch}>
+        {/* Row 1: Global Location & Port Targeting */}
+        <div className="row g-2 mb-3 p-2.5 bg-dark rounded-2 border border-secondary">
+          {/* Current Vehicle Location */}
+          <div className="col-md-6 col-12">
+            <label className="form-label small text-secondary mb-1 d-flex align-items-center gap-1">
+              <MapPin size={13} className="text-danger" /> Current Vehicle Location (Origin)
+            </label>
+            <select
+              className="form-select bg-black text-white border-secondary py-1.5 small"
+              value={filters.origin}
+              onChange={(e) => setFilters({ ...filters, origin: e.target.value })}
+            >
+              {VEHICLE_ORIGIN_LOCATIONS.map((loc) => (
+                <option key={loc.id} value={loc.id}>
+                  {loc.flag} {loc.label} {loc.id !== 'ALL' ? `(${loc.name})` : ''}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Target Destination Port */}
+          <div className="col-md-6 col-12">
+            <label className="form-label small text-secondary mb-1 d-flex align-items-center gap-1">
+              <Ship size={13} className="text-info" /> Target Destination Port
+            </label>
+            <select
+              className="form-select bg-black text-white border-secondary py-1.5 small"
+              value={filters.port}
+              onChange={(e) => setFilters({ ...filters, port: e.target.value })}
+            >
+              {TARGET_DESTINATION_PORTS.map((port) => (
+                <option key={port.id} value={port.id}>
+                  {port.flag} {port.name} {port.country !== 'Global' ? `— ${port.country}` : ''}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Row 2: Condition, Make, Body Style, Max Price, Submit */}
         <div className="row g-3 align-items-end">
           {/* Condition: ALL, USED, NEW */}
           <div className="col-lg col-md-6 col-12">
@@ -56,21 +109,10 @@ const InventorySearchBox = () => {
               <option value="Chevrolet">Chevrolet</option>
               <option value="BMW">BMW</option>
               <option value="Jeep">Jeep</option>
-            </select>
-          </div>
-
-          <div className="col-lg col-md-6 col-12">
-            <label className="form-label small text-secondary mb-1">Model</label>
-            <select 
-              className="form-select bg-dark text-white border-secondary py-2 small"
-              value={filters.model}
-              onChange={(e) => setFilters({ ...filters, model: e.target.value })}
-            >
-              <option value="">Any Model</option>
-              <option value="RAV4">RAV4</option>
-              <option value="Accord">Accord</option>
-              <option value="F-150">F-150</option>
-              <option value="Camaro">Camaro</option>
+              <option value="Lexus">Lexus</option>
+              <option value="Mercedes-Benz">Mercedes-Benz</option>
+              <option value="Nissan">Nissan</option>
+              <option value="Land Rover">Land Rover</option>
             </select>
           </div>
 
@@ -98,26 +140,27 @@ const InventorySearchBox = () => {
               onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
             >
               <option value="">Any Price</option>
-              <option value="20000">$20,000</option>
-              <option value="30000">$30,000</option>
-              <option value="40000">$40,000</option>
+              <option value="25000">$25,000</option>
+              <option value="35000">$35,000</option>
               <option value="50000">$50,000</option>
+              <option value="75000">$75,000</option>
             </select>
           </div>
 
           <div className="col-lg-2 col-12">
             <button 
               type="submit" 
-              className="btn btn-brand-red w-100 py-2 fw-bold text-uppercase small animate-btn"
+              className="btn btn-brand-red w-100 py-2.5 fw-bold text-uppercase small animate-btn d-flex align-items-center justify-content-center gap-1.5"
             >
-              SEARCH
+              <Search size={15} />
+              <span>SEARCH</span>
             </button>
           </div>
         </div>
 
         <div className="d-flex justify-content-end mt-2">
           <a href="/inventory" className="text-secondary small text-decoration-none hover-text-white" style={{ fontSize: '12px' }}>
-            Advanced Search <span className="small">∨</span>
+            Advanced Showroom Search <span className="small">∨</span>
           </a>
         </div>
       </form>

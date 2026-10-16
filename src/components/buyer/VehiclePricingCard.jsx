@@ -1,27 +1,30 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, Star, ShieldCheck, Phone, Mail, Calculator, Check, MessageSquare, Sparkles } from 'lucide-react';
-import { getCurrencySymbol, formatPrice } from '../../data/mockVehicles';
+import { Heart, Star, ShieldCheck, Calculator, MessageSquare, MapPin, Globe } from 'lucide-react';
+import { useCurrency } from '../../context/CurrencyContext';
 
 /**
  * VehiclePricingCard Component
- * Right-side sticky card displaying pricing, purchase actions, favorites toggle, and seller information.
- * 
- * @param {Object} props
- * @param {Object} props.car - Vehicle data
- * @param {Function} [props.onBuyNow] - Callback when "Buy Now" is clicked
- * @param {Function} [props.onContactSeller] - Callback when "Contact Seller" is clicked
+ * Right-side sticky card displaying pricing, real-time FX conversion, 
+ * vehicle location, purchase actions, and seller details.
  */
 const VehiclePricingCard = ({ car = {}, onBuyNow, onContactSeller }) => {
+  const { formatPrice, currency, currencyInfo } = useCurrency();
   const [isFavorited, setIsFavorited] = useState(false);
 
-  const price = car.price != null ? Number(car.price) : 26490;
-  const currencyCode = car.currency || 'USD';
-  const currencySymbol = getCurrencySymbol(currencyCode);
+  const priceUSD = car.price != null ? Number(car.price) : 26490;
   const isNew = (car.condition || '').toUpperCase() === 'NEW';
+  const isNonUsd = currency !== 'USD';
 
-  // Estimate monthly financing based on 60mo @ 5.9% with 10% down
-  const estimatedMonthly = Math.round((price * 0.9 * 1.15) / 60);
+  // Estimate monthly financing based on 60mo @ 5.9% with 10% down in USD base
+  const estimatedMonthlyUSD = Math.round((priceUSD * 0.9 * 1.15) / 60);
+
+  const location = car.location || {
+    country: 'USA',
+    city: 'Houston, TX',
+    flag: '🇺🇸',
+    portOfLoading: 'Port of Houston'
+  };
 
   const seller = car.seller || {
     name: 'Summit Auto Group (Official)',
@@ -37,16 +40,17 @@ const VehiclePricingCard = ({ car = {}, onBuyNow, onContactSeller }) => {
   };
 
   return (
-    <div className="bg-white p-4 rounded-4 border border-light shadow-sm sticky-top" style={{ top: '90px' }}>
+    <div className="bg-white p-4 rounded-4 border border-light shadow-sm sticky-top font-sans" style={{ top: '90px' }}>
       
       {/* Title & Price */}
       <div className="mb-3">
-        <div className="d-flex align-items-center gap-2 mb-1">
+        <div className="d-flex align-items-center gap-2 mb-1.5 flex-wrap">
           <span className={`badge ${isNew ? 'bg-danger text-white' : 'bg-danger bg-opacity-10 text-danger'} fw-bold`} style={{ fontSize: '11px' }}>
             {isNew ? '✨ New Car' : 'Used Car (Certified)'}
           </span>
-          <span className="badge bg-light text-secondary border fw-semibold" style={{ fontSize: '10px' }}>
-            Currency: {currencyCode}
+          <span className="badge bg-dark text-white border fw-semibold d-inline-flex align-items-center gap-1" style={{ fontSize: '11px' }}>
+            <span>{location.flag}</span>
+            <span>{location.country} ({location.city})</span>
           </span>
         </div>
 
@@ -54,16 +58,29 @@ const VehiclePricingCard = ({ car = {}, onBuyNow, onContactSeller }) => {
           {car.year} {car.make} {car.model}
         </h3>
         
-        <div className="d-flex align-items-baseline gap-2 mt-2">
-          <h2 className="display-6 fw-black text-danger m-0" style={{ fontWeight: '900' }}>
-            {formatPrice(price, currencyCode)}
-          </h2>
-          <span className="text-muted small">({currencyCode})</span>
+        {/* Price in Converted Local Currency */}
+        <div className="mt-2">
+          <div className="d-flex align-items-baseline gap-2 flex-wrap">
+            <h2 className="display-6 fw-black text-danger m-0" style={{ fontWeight: '900' }}>
+              {formatPrice(priceUSD)}
+            </h2>
+            {isNonUsd && (
+              <span className="text-muted small fw-semibold">
+                (≈ ${priceUSD.toLocaleString()} USD)
+              </span>
+            )}
+          </div>
+          {isNonUsd && (
+            <small className="text-secondary d-block mt-0.5" style={{ fontSize: '10px' }}>
+              Live FX conversion ({currencyInfo.code})
+            </small>
+          )}
         </div>
 
-        <div className="d-flex align-items-center gap-1 text-muted small mt-1">
+        {/* Financing Estimation in active currency */}
+        <div className="d-flex align-items-center gap-1 text-muted small mt-2">
           <Calculator size={14} className="text-danger" />
-          <span>Est. <strong>{currencySymbol}{estimatedMonthly.toLocaleString()}/mo</strong> for 60 mos</span>
+          <span>Est. <strong>{formatPrice(estimatedMonthlyUSD)}/mo</strong> for 60 mos</span>
           <Link to="/financing" className="text-danger fw-bold ms-1 text-decoration-none hover-text-danger" style={{ fontSize: '11px' }}>
             Calculate
           </Link>
@@ -102,8 +119,18 @@ const VehiclePricingCard = ({ car = {}, onBuyNow, onContactSeller }) => {
         </button>
       </div>
 
+      {/* Origin & Port Shipping Notice */}
+      <div className="p-2.5 bg-light rounded-3 border border-light mb-3 text-start small">
+        <div className="d-flex align-items-center gap-1.5 text-dark fw-bold mb-0.5" style={{ fontSize: '11px' }}>
+          <Globe size={13} className="text-danger" /> Global Vehicle Logistics
+        </div>
+        <span className="text-muted d-block" style={{ fontSize: '11px' }}>
+          Loaded at <strong>{location.portOfLoading}</strong>. Direct ocean freight available to Lagos, Mombasa, Tema, Durban, and major global ports.
+        </span>
+      </div>
+
       {/* Seller Information Box */}
-      <div className="border-top pt-3.5">
+      <div className="border-top pt-3">
         <div className="d-flex justify-content-between align-items-center mb-1">
           <span className="text-muted small fw-semibold" style={{ fontSize: '11px' }}>SELLER INFORMATION</span>
           {seller.isVerified && (
@@ -129,7 +156,7 @@ const VehiclePricingCard = ({ car = {}, onBuyNow, onContactSeller }) => {
 
         <button 
           onClick={onContactSeller}
-          className="btn btn-dark w-100 py-2.5 mt-3 fw-bold small d-flex align-items-center justify-content-center gap-2 text-uppercase"
+          className="btn btn-dark w-100 py-2.5 mt-2 fw-bold small d-flex align-items-center justify-content-center gap-2 text-uppercase"
           style={{ fontSize: '12px' }}
         >
           <MessageSquare size={15} />

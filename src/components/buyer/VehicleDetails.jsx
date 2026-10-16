@@ -11,6 +11,7 @@ import VehicleOverview from './VehicleOverview';
 import VehiclePricingCard from './VehiclePricingCard';
 import VehicleContactModal from './VehicleContactModal';
 import VehiclePurchaseModal from './VehiclePurchaseModal';
+import GlobalShippingCalculator from './GlobalShippingCalculator';
 
 /**
  * VehicleDetails Component
@@ -98,6 +99,9 @@ const VehicleDetails = () => {
 
             {/* Overview & Key Features */}
             <VehicleOverview car={car} />
+
+            {/* Smart Global Ocean Freight & Port Landed Cost Calculator */}
+            <GlobalShippingCalculator car={car} />
           </div>
 
           {/* Right Column: Pricing & Seller Details Card */}
