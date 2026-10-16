@@ -40,6 +40,10 @@ import AdminVehicles from './pages/admin/AdminVehicles';
 import AdminOrders from './pages/admin/AdminOrders';
 import AdminRevenue from './pages/admin/AdminRevenue';
 
+
+// payment section
+import Checkout from './components/payment/checkout';
+
 function App() {
   return (
     <Router>
@@ -54,6 +58,9 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+
+          {/* payment section */}
+          <Route path="/checkout" element={<Checkout />} />
 
           {/* Buyer Portal Routes */}
           <Route path="/buyer-dashboard" element={<BuyerDashboard />} />

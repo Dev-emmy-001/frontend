@@ -261,3 +261,27 @@ body {
   box-shadow: 0 0 0 3px rgba(6, 95, 70, 0.1);
   outline: none;
 }
+
+
+
+
+
+/* payment section */
+
+/* Payment Option Cards */
+.payment-option-card {
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.payment-option-card.active {
+  border-color: var(--brand-red, #D91C24);
+  background-color: #FFF5F5;
+}
+
+.payment-option-card:hover {
+  border-color: var(--brand-red, #D91C24);
+}
