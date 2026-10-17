@@ -47,11 +47,15 @@ import Checkout from './components/payment/Checkout';
 // Real-Time Currency Engine Context
 import { CurrencyProvider } from './context/CurrencyContext';
 
+// Multi-Language Support (i18n) Context
+import { LanguageProvider } from './context/LanguageContext';
+
 function App() {
   return (
-    <CurrencyProvider>
-      <Router>
-        <div className="app-container">
+    <LanguageProvider>
+      <CurrencyProvider>
+        <Router>
+          <div className="app-container">
         <Routes>
           {/* Public Website Routes */}
           <Route path="/" element={<Home />} />
@@ -105,6 +109,7 @@ function App() {
       </div>
     </Router>
   </CurrencyProvider>
+</LanguageProvider>
   );
 }
 

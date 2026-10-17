@@ -1,11 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Phone, Mail } from 'lucide-react';
+import { MapPin, Phone, Mail, Globe } from 'lucide-react';
 import logoImg from '../../assets/logo.png';
 import { siteConfig } from '../../data/siteConfig';
+import { useTranslation } from '../../context/LanguageContext';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const Footer = ({ theme = 'dark' }) => {
   const isDark = theme === 'dark';
+  const { t } = useTranslation();
 
   return (
     <footer className={`${isDark ? 'bg-black text-white-50 border-secondary' : 'bg-white text-secondary border-light'} pt-5 pb-3 border-top`}>
@@ -62,20 +65,20 @@ const Footer = ({ theme = 'dark' }) => {
 
           {/* Column 2: Quick Links */}
           <div className="col-lg-3 col-md-6 col-12">
-            <h6 className={`${isDark ? 'text-white' : 'text-dark'} fw-bold text-uppercase small mb-3`}>QUICK LINKS</h6>
+            <h6 className={`${isDark ? 'text-white' : 'text-dark'} fw-bold text-uppercase small mb-3`}>{t('footer.quickLinks', 'QUICK LINKS')}</h6>
             <ul className="list-unstyled d-flex flex-column gap-2 small" style={{ fontSize: '13px' }}>
-              <li><Link to="/inventory" className={`${isDark ? 'text-white-50 hover-text-white' : 'text-secondary hover-text-dark'} text-decoration-none`}>Inventory</Link></li>
-              <li><Link to="/inventory" className={`${isDark ? 'text-white-50 hover-text-white' : 'text-secondary hover-text-dark'} text-decoration-none`}>Shop by Type</Link></li>
-              <li><Link to="/financing" className={`${isDark ? 'text-white-50 hover-text-white' : 'text-secondary hover-text-dark'} text-decoration-none`}>Financing</Link></li>
-              <li><Link to="/inventory" className={`${isDark ? 'text-white-50 hover-text-white' : 'text-secondary hover-text-dark'} text-decoration-none`}>Specials</Link></li>
-              <li><Link to="/about" className={`${isDark ? 'text-white-50 hover-text-white' : 'text-secondary hover-text-dark'} text-decoration-none`}>About Us</Link></li>
-              <li><Link to="/contact" className={`${isDark ? 'text-white-50 hover-text-white' : 'text-secondary hover-text-dark'} text-decoration-none`}>Contact Us</Link></li>
+              <li><Link to="/inventory" className={`${isDark ? 'text-white-50 hover-text-white' : 'text-secondary hover-text-dark'} text-decoration-none`}>{t('nav.inventory', 'Inventory')}</Link></li>
+              <li><Link to="/inventory" className={`${isDark ? 'text-white-50 hover-text-white' : 'text-secondary hover-text-dark'} text-decoration-none`}>{t('nav.shopByType', 'Shop by Type')}</Link></li>
+              <li><Link to="/financing" className={`${isDark ? 'text-white-50 hover-text-white' : 'text-secondary hover-text-dark'} text-decoration-none`}>{t('nav.financing', 'Financing')}</Link></li>
+              <li><Link to="/inventory" className={`${isDark ? 'text-white-50 hover-text-white' : 'text-secondary hover-text-dark'} text-decoration-none`}>{t('popularPicks.title', 'Specials')}</Link></li>
+              <li><Link to="/about" className={`${isDark ? 'text-white-50 hover-text-white' : 'text-secondary hover-text-dark'} text-decoration-none`}>{t('nav.about', 'About Us')}</Link></li>
+              <li><Link to="/contact" className={`${isDark ? 'text-white-50 hover-text-white' : 'text-secondary hover-text-dark'} text-decoration-none`}>{t('nav.contact', 'Contact Us')}</Link></li>
             </ul>
           </div>
 
           {/* Column 3: Customer Care */}
           <div className="col-lg-3 col-md-6 col-12">
-            <h6 className={`${isDark ? 'text-white' : 'text-dark'} fw-bold text-uppercase small mb-3`}>CUSTOMER CARE</h6>
+            <h6 className={`${isDark ? 'text-white' : 'text-dark'} fw-bold text-uppercase small mb-3`}>{t('footer.customerCare', 'CUSTOMER CARE')}</h6>
             <ul className={`list-unstyled d-flex flex-column gap-3 small ${isDark ? 'text-white-50' : 'text-secondary'}`} style={{ fontSize: '13px' }}>
               <li className="d-flex align-items-start gap-2">
                 <Phone size={16} className="text-danger flex-shrink-0 mt-0.5" />
@@ -94,28 +97,28 @@ const Footer = ({ theme = 'dark' }) => {
 
           {/* Column 4: Hours */}
           <div className="col-lg-3 col-md-6 col-12">
-            <h6 className={`${isDark ? 'text-white' : 'text-dark'} fw-bold text-uppercase small mb-3`}>HOURS</h6>
+            <h6 className={`${isDark ? 'text-white' : 'text-dark'} fw-bold text-uppercase small mb-3`}>{t('footer.hours', 'HOURS')}</h6>
             <div className={`small ${isDark ? 'text-white-50' : 'text-secondary'}`} style={{ fontSize: '13px' }}>
               <div className="mb-3">
-                <strong className={`${isDark ? 'text-white' : 'text-dark'} d-block mb-1`}>Sales</strong>
+                <strong className={`${isDark ? 'text-white' : 'text-dark'} d-block mb-1`}>{t('footer.sales', 'Sales')}</strong>
                 <div className="d-flex justify-content-between">
-                  <span>Mon - Sat</span>
+                  <span>{t('footer.monSat', 'Mon - Sat')}</span>
                   <span>9:00 AM - 7:00 PM</span>
                 </div>
                 <div className="d-flex justify-content-between">
-                  <span>Sunday</span>
-                  <span>Closed</span>
+                  <span>{t('footer.sunday', 'Sunday')}</span>
+                  <span className="text-danger">{t('footer.closed', 'Closed')}</span>
                 </div>
               </div>
               <div>
-                <strong className={`${isDark ? 'text-white' : 'text-dark'} d-block mb-1`}>Service</strong>
+                <strong className={`${isDark ? 'text-white' : 'text-dark'} d-block mb-1`}>{t('footer.service', 'Service')}</strong>
                 <div className="d-flex justify-content-between">
-                  <span>Mon - Sat</span>
+                  <span>{t('footer.monSat', 'Mon - Sat')}</span>
                   <span>7:00 AM - 6:00 PM</span>
                 </div>
                 <div className="d-flex justify-content-between">
-                  <span>Sunday</span>
-                  <span>Closed</span>
+                  <span>{t('footer.sunday', 'Sunday')}</span>
+                  <span className="text-danger">{t('footer.closed', 'Closed')}</span>
                 </div>
               </div>
             </div>
@@ -124,14 +127,17 @@ const Footer = ({ theme = 'dark' }) => {
         </div>
 
         {/* Copyright Bottom Bar */}
-        <div className={`border-top ${isDark ? 'border-secondary' : 'border-light'} mt-5 pt-3 d-flex justify-content-between align-items-center flex-wrap gap-2 small ${isDark ? 'text-white-50' : 'text-muted'}`} style={{ fontSize: '12px' }}>
-          <span>© {new Date().getFullYear()} {siteConfig.name}. All rights reserved.</span>
-          <div className="d-flex gap-3">
-            <a href="#privacy" className="text-decoration-none text-reset hover-text-white">Privacy Policy</a>
+        <div className={`border-top ${isDark ? 'border-secondary' : 'border-light'} mt-5 pt-3 d-flex justify-content-between align-items-center flex-wrap gap-3 small ${isDark ? 'text-white-50' : 'text-muted'}`} style={{ fontSize: '12px' }}>
+          <span>© {new Date().getFullYear()} {siteConfig.name}. {t('footer.allRightsReserved', 'All rights reserved.')}</span>
+          
+          <div className="d-flex align-items-center gap-3">
+            <LanguageSwitcher isDark={isDark} compact={true} showLabel={true} />
+            <span className="opacity-25">|</span>
+            <a href="#privacy" className="text-decoration-none text-reset hover-text-white">{t('footer.privacyPolicy', 'Privacy Policy')}</a>
             <span>|</span>
-            <a href="#terms" className="text-decoration-none text-reset hover-text-white">Terms of Use</a>
+            <a href="#terms" className="text-decoration-none text-reset hover-text-white">{t('footer.termsOfUse', 'Terms of Use')}</a>
             <span>|</span>
-            <a href="#sitemap" className="text-decoration-none text-reset hover-text-white">Sitemap</a>
+            <a href="#sitemap" className="text-decoration-none text-reset hover-text-white">{t('footer.sitemap', 'Sitemap')}</a>
           </div>
         </div>
 
