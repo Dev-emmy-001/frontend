@@ -2,9 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Gauge, ArrowRight, MapPin, Ship } from 'lucide-react';
 import { useCurrency } from '../../context/CurrencyContext';
+import { useTranslation } from '../../context/LanguageContext';
 
 const VehicleCard = ({ car, isDark = false, selectedPort = null }) => {
   const { formatPrice, currency } = useCurrency();
+  const { t } = useTranslation();
   const fallbackImage = 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=80';
   const imageUrl = car?.images && car.images.length > 0 ? car.images[0] : fallbackImage;
   const isNew = (car?.condition || '').toUpperCase() === 'NEW';
@@ -56,7 +58,7 @@ const VehicleCard = ({ car, isDark = false, selectedPort = null }) => {
           }`}
           style={{ fontSize: '10px', borderRadius: '4px', letterSpacing: '0.5px' }}
         >
-          {isNew ? '✨ NEW' : 'USED'}
+          {isNew ? t('vehicleCard.newBadge', '✨ NEW') : t('vehicleCard.usedBadge', 'USED')}
         </span>
 
         {/* Port / Terminal Footer Overlay */}
@@ -73,7 +75,7 @@ const VehicleCard = ({ car, isDark = false, selectedPort = null }) => {
           </span>
           {selectedPort && selectedPort !== 'ALL' && (
             <span className="text-info fw-bold d-flex align-items-center gap-1">
-              <Ship size={11} /> Ships to {selectedPort}
+              <Ship size={11} /> {t('vehicleCard.shipsTo', 'Ships to')} {selectedPort}
             </span>
           )}
         </div>
@@ -88,9 +90,9 @@ const VehicleCard = ({ car, isDark = false, selectedPort = null }) => {
           
           <div className="text-muted small d-flex align-items-center gap-2 my-2" style={{ fontSize: '12px' }}>
             <Gauge size={13} className="text-danger" />
-            <span>{car.mileage != null ? `${Number(car.mileage).toLocaleString()} mi` : 'N/A'}</span>
+            <span>{car.mileage != null ? `${Number(car.mileage).toLocaleString()} ${t('vehicleCard.milesUnit', 'mi')}` : 'N/A'}</span>
             <span>•</span>
-            <span>{car.transmission || 'Automatic'}</span>
+            <span>{car.transmission === 'Manual' ? t('vehicleCard.manual', 'Manual') : t('vehicleCard.automatic', 'Automatic')}</span>
             <span>•</span>
             <span>{car.bodyStyle || car.bodyType || 'Sedan'}</span>
           </div>
@@ -109,7 +111,7 @@ const VehicleCard = ({ car, isDark = false, selectedPort = null }) => {
             </div>
             {isNonUsd && (
               <small className="text-secondary d-block" style={{ fontSize: '10px' }}>
-                Auto-converted via live FX
+                {t('vehicleCard.autoConverted', 'Auto-converted via live FX')}
               </small>
             )}
           </div>
@@ -117,14 +119,14 @@ const VehicleCard = ({ car, isDark = false, selectedPort = null }) => {
 
         <div className={`pt-3 mt-2 border-top d-flex justify-content-between align-items-center ${isDark ? 'border-secondary' : 'border-light'}`}>
           <span className="badge bg-light text-secondary border" style={{ fontSize: '10px' }}>
-            {location.portOfLoading || 'Export Ready'}
+            {location.portOfLoading || t('vehicleCard.exportReady', 'Export Ready')}
           </span>
           <Link 
             to={`/vehicle/${car?._id || car?.id || '1'}`} 
             className="text-danger fw-bold small text-decoration-none d-flex align-items-center gap-1 hover-text-danger" 
             style={{ fontSize: '12px' }}
           >
-            <span>VIEW DETAILS</span>
+            <span>{t('vehicleCard.viewDetails', 'VIEW DETAILS')}</span>
             <ArrowRight size={14} />
           </Link>
         </div>
