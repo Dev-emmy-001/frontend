@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom';
 import api from '../../data/apiConfig';
 import VehicleCard from '../common/VehicleCard';
 import { VEHICLE_CATEGORIES, sampleVehicles, filterVehiclesByTab } from '../../data/mockVehicles';
+import { useTranslation } from '../../context/LanguageContext';
 
 const PopularVehicles = () => {
+  const { t } = useTranslation();
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('ALL VEHICLES');
@@ -32,6 +34,18 @@ const PopularVehicles = () => {
   const displayList = vehicles.length > 0 ? vehicles : sampleVehicles;
   const filteredVehicles = filterVehiclesByTab(displayList, activeTab);
 
+  const getTabLabel = (tab) => {
+    switch (tab) {
+      case 'ALL VEHICLES': return t('searchBox.allConditions', 'ALL VEHICLES');
+      case 'SEDANS': return t('nav.sedans', 'SEDANS');
+      case 'SUVS': return t('nav.suvs', 'SUVS');
+      case 'TRUCKS': return t('nav.trucks', 'TRUCKS');
+      case 'COUPES': return t('nav.coupes', 'COUPES');
+      case 'HYBRIDS': return t('nav.hybrids', 'HYBRIDS');
+      default: return tab;
+    }
+  };
+
   return (
     <section className="bg-white text-dark py-5">
       <div className="container py-3">
@@ -39,10 +53,10 @@ const PopularVehicles = () => {
         {/* Section Heading & Category Tabs */}
         <div className="text-center mb-4">
           <span className="text-danger fw-bold small text-uppercase tracking-wider">
-            SHOP OUR INVENTORY
+            {t('popularPicks.badge', 'SHOP OUR INVENTORY')}
           </span>
           <h2 className="fw-black text-uppercase display-6 m-0" style={{ fontWeight: '900' }}>
-            POPULAR PICKS
+            {t('popularPicks.title', 'POPULAR PICKS')}
           </h2>
           
           <div className="d-flex justify-content-center flex-wrap gap-3 gap-md-4 mt-3 border-bottom border-light pb-2">
@@ -53,7 +67,7 @@ const PopularVehicles = () => {
                 className={`btn btn-link text-decoration-none fw-bold small p-0 ${activeTab === tab ? 'text-danger border-bottom border-danger border-2 pb-1' : 'text-secondary'}`}
                 style={{ textDecoration: 'none', fontSize: '13px' }}
               >
-                {tab}
+                {getTabLabel(tab)}
               </button>
             ))}
           </div>
@@ -63,7 +77,7 @@ const PopularVehicles = () => {
         {loading ? (
           <div className="text-center py-5">
             <div className="spinner-border text-danger" role="status">
-              <span className="visually-hidden">Loading vehicles...</span>
+              <span className="visually-hidden">{t('popularPicks.loading', 'Loading vehicles...')}</span>
             </div>
           </div>
         ) : (
@@ -83,7 +97,7 @@ const PopularVehicles = () => {
             className="btn btn-outline-dark px-4 py-2.5 fw-bold text-uppercase" 
             style={{ borderRadius: '4px', fontSize: '13px' }}
           >
-            VIEW ALL INVENTORY
+            {t('popularPicks.viewAll', 'VIEW ALL INVENTORY')}
           </Link>
         </div>
 

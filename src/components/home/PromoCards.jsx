@@ -1,7 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from '../../context/LanguageContext';
 
 const PromoCards = () => {
+  const { t } = useTranslation();
+
   return (
     <section className="bg-dark py-5">
       <div className="container">
@@ -20,19 +23,19 @@ const PromoCards = () => {
               }}
             >
               <span className="text-danger fw-bold text-uppercase small mb-1">
-                EASY FINANCING
+                {t('promos.financingBadge', 'EASY FINANCING')}
               </span>
               <h3 className="fw-black text-uppercase mb-2" style={{ fontWeight: '900' }}>
-                DRIVE NOW, <br />PAY YOUR WAY
+                {t('promos.financingTitle', 'DRIVE NOW, PAY YOUR WAY')}
               </h3>
               <p className="text-secondary small mb-4" style={{ maxWidth: '300px' }}>
-                Get pre-approved in minutes and choose a plan that works for you.
+                {t('promos.financingDesc', 'Get pre-approved in minutes and choose a plan that works for you.')}
               </p>
               <Link 
                 to="/signup" 
                 className="btn btn-brand-red me-auto px-4 py-2.5 small fw-bold"
               >
-                GET PRE-APPROVED
+                {t('promos.financingBtn', 'GET PRE-APPROVED')}
               </Link>
             </div>
           </div>
@@ -50,20 +53,20 @@ const PromoCards = () => {
               }}
             >
               <span className="text-danger fw-bold text-uppercase small mb-1">
-                VALUE YOUR TRADE
+                {t('promos.tradeBadge', 'VALUE YOUR TRADE')}
               </span>
               <h3 className="fw-black text-uppercase mb-2" style={{ fontWeight: '900' }}>
-                WHAT'S YOUR <br />CAR WORTH?
+                {t('promos.tradeTitle', "WHAT'S YOUR CAR WORTH?")}
               </h3>
               <p className="text-secondary small mb-4" style={{ maxWidth: '300px' }}>
-                Get a fair market value for your vehicle in just a few clicks.
+                {t('promos.tradeDesc', 'Get a fair market value for your vehicle in just a few clicks.')}
               </p>
               <Link 
                 to="/contact" 
                 className="btn btn-outline-light me-auto px-4 py-2.5 small fw-bold" 
                 style={{ borderRadius: '4px' }}
               >
-                VALUE YOUR TRADE
+                {t('promos.tradeBtn', 'VALUE YOUR TRADE')}
               </Link>
             </div>
           </div>

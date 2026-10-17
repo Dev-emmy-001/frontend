@@ -1,17 +1,20 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from '../../context/LanguageContext';
 
 const ContactHero = () => {
+  const { t } = useTranslation();
+
   return (
     <section className="container pt-5 pb-4">
       {/* Breadcrumb Navigation */}
       <nav aria-label="breadcrumb" className="mb-3">
         <ol className="breadcrumb small">
           <li className="breadcrumb-item">
-            <Link to="/" className="text-secondary text-decoration-none">Home</Link>
+            <Link to="/" className="text-secondary text-decoration-none">{t('nav.home', 'Home')}</Link>
           </li>
           <li className="breadcrumb-item active text-dark fw-semibold" aria-current="page">
-            Contact Us
+            {t('nav.contact', 'Contact Us')}
           </li>
         </ol>
       </nav>
@@ -19,10 +22,10 @@ const ContactHero = () => {
       <div className="row align-items-center g-4">
         <div className="col-lg-6">
           <h1 className="display-4 fw-black text-dark mb-2">
-            CONTACT <span className="text-success" style={{ color: '#065F46' }}>US</span>
+            {t('contact.title', 'CONTACT US')}
           </h1>
           <p className="text-secondary fs-6 leading-relaxed m-0" style={{ maxWidth: '480px' }}>
-            We're here to help! Reach out to us with any questions or visit us at our location.
+            {t('contact.subtitle', "We're here to help! Reach out to us with any questions or visit us at our location.")}
           </p>
         </div>
 

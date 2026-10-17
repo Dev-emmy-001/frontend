@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import InventorySearchBox from './InventorySearchBox';
+import { useTranslation } from '../../context/LanguageContext';
 
 const HeroSection = () => {
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
+  const { t } = useTranslation();
 
   const heroImages = [
     'https://di-uploads-pod23.dealerinspire.com/lexusoflasvegas/uploads/2023/06/2024_Lexus_GX_Overtrail_008-scaled-1.jpg',
@@ -46,31 +48,31 @@ const HeroSection = () => {
       <div className="container py-4 position-relative" style={{ zIndex: 1 }}>
         <div className="max-w-xl" style={{ maxWidth: '600px' }}>
           <p className="text-danger fw-bold text-uppercase tracking-wider small m-0 animate-slide-right">
-            EXCEPTIONAL CARS.
+            {t('hero.tagline1', 'EXCEPTIONAL CARS.')}
           </p>
           <p className="text-white fw-bold text-uppercase tracking-wider small mb-3 animate-slide-right delay-1">
-            EXCEPTIONAL EXPERIENCE.
+            {t('hero.tagline2', 'EXCEPTIONAL EXPERIENCE.')}
           </p>
           <h1 className="display-4 fw-black text-uppercase text-white mb-2 animate-slide-right delay-2" style={{ fontSize: '3rem', fontWeight: '900', lineHeight: '1.1' }}>
-            FIND YOUR <br />
-            <span className="text-danger">PERFECT MATCH</span>
+            {t('hero.titlePrefix', 'FIND YOUR')} <br />
+            <span className="text-danger">{t('hero.titleHighlight', 'PERFECT MATCH')}</span>
           </h1>
           <p className="text-secondary mb-4 fs-6 animate-slide-right delay-3">
-            Shop our wide selection of quality new and pre-owned vehicles.
+            {t('hero.subtitle', 'Shop our wide selection of quality new and pre-owned vehicles.')}
           </p>
-          <div className="d-flex gap-3 mb-5 animate-slide-right delay-4">
+          <div className="d-flex gap-3 mb-5 animate-slide-right delay-4 flex-wrap">
             <Link 
               to="/inventory" 
               className="btn btn-brand-red px-4 py-2.5 fw-bold text-uppercase animate-btn"
             >
-              BROWSE INVENTORY
+              {t('hero.browseInventory', 'BROWSE INVENTORY')}
             </Link>
             <Link 
               to="/signup" 
               className="btn btn-outline-light px-4 py-2.5 fw-bold text-uppercase animate-btn" 
               style={{ borderRadius: '4px' }}
             >
-              GET PRE-APPROVED
+              {t('hero.getPreApproved', 'GET PRE-APPROVED')}
             </Link>
           </div>
         </div>

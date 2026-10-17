@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Send } from 'lucide-react';
+import { useTranslation } from '../../context/LanguageContext';
 
 const ContactForm = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -26,7 +28,7 @@ const ContactForm = () => {
 
   return (
     <div className="col-lg-7">
-      <h5 className="fw-bold text-dark mb-4">Send Us a Message</h5>
+      <h5 className="fw-bold text-dark mb-4">{t('contact.sendMessage', 'Send Us a Message')}</h5>
 
       {submitted && (
         <div className="alert alert-success py-3 px-4 mb-4 small fw-semibold">
@@ -37,48 +39,48 @@ const ContactForm = () => {
       <form onSubmit={handleSubmit} className="row g-3">
         <div className="col-12">
           <label className="form-label small fw-bold text-dark m-0 mb-1">
-            Full Name *
+            {t('contact.fullName', 'Full Name')} *
           </label>
           <input 
             type="text" 
             required
             value={formData.fullName}
             className="form-control form-input-light" 
-            placeholder="Enter your full name"
+            placeholder={t('contact.fullName', 'Enter your full name')}
             onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
           />
         </div>
 
         <div className="col-12">
           <label className="form-label small fw-bold text-dark m-0 mb-1">
-            Email Address *
+            {t('contact.emailAddress', 'Email Address')} *
           </label>
           <input 
             type="email" 
             required
             value={formData.email}
             className="form-control form-input-light" 
-            placeholder="Enter your email"
+            placeholder={t('contact.emailAddress', 'Enter your email')}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           />
         </div>
 
         <div className="col-12">
           <label className="form-label small fw-bold text-dark m-0 mb-1">
-            Phone Number
+            {t('contact.phone', 'Phone Number')}
           </label>
           <input 
             type="tel" 
             value={formData.phone}
             className="form-control form-input-light" 
-            placeholder="Enter your phone number"
+            placeholder={t('contact.phone', 'Enter your phone number')}
             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
           />
         </div>
 
         <div className="col-12">
           <label className="form-label small fw-bold text-dark m-0 mb-1">
-            Subject *
+            {t('contact.subject', 'Subject')} *
           </label>
           <select 
             required 
@@ -97,7 +99,7 @@ const ContactForm = () => {
 
         <div className="col-12">
           <label className="form-label small fw-bold text-dark m-0 mb-1">
-            Message *
+            {t('contact.message', 'Message')} *
           </label>
           <textarea 
             rows="4" 
@@ -114,7 +116,7 @@ const ContactForm = () => {
             type="submit" 
             className="btn btn-brand-green w-100 py-3 fw-bold text-uppercase d-flex align-items-center justify-content-center gap-2"
           >
-            <span>SEND MESSAGE</span>
+            <span>{t('contact.submit', 'SEND MESSAGE')}</span>
             <Send size={16} />
           </button>
         </div>

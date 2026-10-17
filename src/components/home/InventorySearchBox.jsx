@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, Ship, Globe, Search } from 'lucide-react';
 import { VEHICLE_ORIGIN_LOCATIONS, TARGET_DESTINATION_PORTS } from '../../data/globalShippingData';
+import { useTranslation } from '../../context/LanguageContext';
 
 const InventorySearchBox = () => {
+  const { t } = useTranslation();
   const [filters, setFilters] = useState({
     condition: 'ALL',
     origin: 'ALL',
@@ -32,10 +34,10 @@ const InventorySearchBox = () => {
     <div className="bg-black bg-opacity-90 border border-secondary p-4 rounded-3 shadow-lg mt-4 font-sans" style={{ maxWidth: '100%' }}>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h6 className="fw-bold text-white text-uppercase small m-0 d-flex align-items-center gap-1.5">
-          <Globe size={16} className="text-danger" /> SMART GLOBAL SEARCH & INVENTORY
+          <Globe size={16} className="text-danger" /> {t('searchBox.title', 'SMART GLOBAL SEARCH & INVENTORY')}
         </h6>
         <span className="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-50 small d-none d-sm-inline-block">
-          Worldwide Port Shipping
+          {t('searchBox.badge', 'Worldwide Port Shipping')}
         </span>
       </div>
 
@@ -45,7 +47,7 @@ const InventorySearchBox = () => {
           {/* Current Vehicle Location */}
           <div className="col-md-6 col-12">
             <label className="form-label small text-secondary mb-1 d-flex align-items-center gap-1">
-              <MapPin size={13} className="text-danger" /> Current Vehicle Location (Origin)
+              <MapPin size={13} className="text-danger" /> {t('searchBox.originLabel', 'Current Vehicle Location (Origin)')}
             </label>
             <select
               className="form-select bg-black text-white border-secondary py-1.5 small"
@@ -63,7 +65,7 @@ const InventorySearchBox = () => {
           {/* Target Destination Port */}
           <div className="col-md-6 col-12">
             <label className="form-label small text-secondary mb-1 d-flex align-items-center gap-1">
-              <Ship size={13} className="text-info" /> Target Destination Port
+              <Ship size={13} className="text-info" /> {t('searchBox.portLabel', 'Target Destination Port')}
             </label>
             <select
               className="form-select bg-black text-white border-secondary py-1.5 small"
@@ -83,26 +85,26 @@ const InventorySearchBox = () => {
         <div className="row g-3 align-items-end">
           {/* Condition: ALL, USED, NEW */}
           <div className="col-lg col-md-6 col-12">
-            <label className="form-label small text-secondary mb-1">Condition</label>
+            <label className="form-label small text-secondary mb-1">{t('searchBox.condition', 'Condition')}</label>
             <select 
               className="form-select bg-dark text-white border-secondary py-2 small"
               value={filters.condition}
               onChange={(e) => setFilters({ ...filters, condition: e.target.value })}
             >
-              <option value="ALL">All Conditions (ALL)</option>
-              <option value="USED">Used Cars (USED)</option>
-              <option value="NEW">New Cars (NEW)</option>
+              <option value="ALL">{t('searchBox.allConditions', 'All Conditions (ALL)')}</option>
+              <option value="USED">{t('searchBox.usedCars', 'Used Cars (USED)')}</option>
+              <option value="NEW">{t('searchBox.newCars', 'New Cars (NEW)')}</option>
             </select>
           </div>
 
           <div className="col-lg col-md-6 col-12">
-            <label className="form-label small text-secondary mb-1">Make</label>
+            <label className="form-label small text-secondary mb-1">{t('searchBox.make', 'Make')}</label>
             <select 
               className="form-select bg-dark text-white border-secondary py-2 small"
               value={filters.make}
               onChange={(e) => setFilters({ ...filters, make: e.target.value })}
             >
-              <option value="">Any Make</option>
+              <option value="">{t('searchBox.allMakes', 'All Makes')}</option>
               <option value="Toyota">Toyota</option>
               <option value="Honda">Honda</option>
               <option value="Ford">Ford</option>
@@ -117,29 +119,29 @@ const InventorySearchBox = () => {
           </div>
 
           <div className="col-lg col-md-6 col-12">
-            <label className="form-label small text-secondary mb-1">Body Style</label>
+            <label className="form-label small text-secondary mb-1">{t('searchBox.bodyStyle', 'Body Style')}</label>
             <select 
               className="form-select bg-dark text-white border-secondary py-2 small"
               value={filters.bodyStyle}
               onChange={(e) => setFilters({ ...filters, bodyStyle: e.target.value })}
             >
-              <option value="">Any Body Style</option>
-              <option value="Sedan">Sedan</option>
-              <option value="SUV">SUV</option>
-              <option value="Truck">Truck</option>
-              <option value="Coupe">Coupe</option>
-              <option value="Hybrid">Hybrid</option>
+              <option value="">{t('searchBox.allBodyStyles', 'All Body Styles')}</option>
+              <option value="Sedan">{t('nav.sedans', 'Sedan')}</option>
+              <option value="SUV">{t('nav.suvs', 'SUV')}</option>
+              <option value="Truck">{t('nav.trucks', 'Truck')}</option>
+              <option value="Coupe">{t('nav.coupes', 'Coupe')}</option>
+              <option value="Hybrid">{t('nav.hybrids', 'Hybrid')}</option>
             </select>
           </div>
 
           <div className="col-lg col-md-6 col-12">
-            <label className="form-label small text-secondary mb-1">Max Price</label>
+            <label className="form-label small text-secondary mb-1">{t('searchBox.maxPrice', 'Max Price')}</label>
             <select 
               className="form-select bg-dark text-white border-secondary py-2 small"
               value={filters.maxPrice}
               onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
             >
-              <option value="">Any Price</option>
+              <option value="">{t('searchBox.allPrices', 'Any Price')}</option>
               <option value="25000">$25,000</option>
               <option value="35000">$35,000</option>
               <option value="50000">$50,000</option>
@@ -153,7 +155,7 @@ const InventorySearchBox = () => {
               className="btn btn-brand-red w-100 py-2.5 fw-bold text-uppercase small animate-btn d-flex align-items-center justify-content-center gap-1.5"
             >
               <Search size={15} />
-              <span>SEARCH</span>
+              <span>{t('searchBox.searchButton', 'SEARCH')}</span>
             </button>
           </div>
         </div>

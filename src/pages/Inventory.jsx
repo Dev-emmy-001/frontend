@@ -7,8 +7,10 @@ import Footer from '../components/common/Footer';
 import InventoryFilterBar from '../components/inventory/InventoryFilterBar';
 import InventoryGrid from '../components/inventory/InventoryGrid';
 import { sampleVehicles, filterVehiclesByTab } from '../data/mockVehicles';
+import { useTranslation } from '../context/LanguageContext';
 
 const Inventory = () => {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -160,13 +162,13 @@ const Inventory = () => {
       <main className="container py-5">
         <div className="mb-4">
           <span className="text-danger fw-bold small text-uppercase tracking-wider">
-            GLOBAL AUTOMOTIVE SHOWROOM
+            {t('inventory.showroomBadge', 'GLOBAL AUTOMOTIVE SHOWROOM')}
           </span>
           <h1 className="fw-black text-uppercase display-5 m-0" style={{ fontWeight: '900' }}>
-            VEHICLE INVENTORY
+            {t('inventory.showroomTitle', 'VEHICLE INVENTORY')}
           </h1>
           <p className="text-secondary small mt-1">
-            Browse our curated selection of verified global vehicles with direct international port delivery & live currency conversions.
+            {t('inventory.showroomDesc', 'Browse our curated selection of verified global vehicles with direct international port delivery & live currency conversions.')}
           </p>
         </div>
 

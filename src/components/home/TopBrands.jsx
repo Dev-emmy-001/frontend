@@ -1,13 +1,16 @@
 import React from 'react';
 import { topBrands } from '../../data/brandsData';
+import { useTranslation } from '../../context/LanguageContext';
 
 const TopBrands = () => {
+  const { t } = useTranslation();
+
   return (
     <section className="bg-white text-dark py-5">
       <div className="container">
         <div className="text-center mb-4">
           <span className="text-secondary fw-bold text-uppercase tracking-wider" style={{ fontSize: '12px' }}>
-            WE PROUDLY CARRY TOP BRANDS
+            {t('topBrands.title', 'WE PROUDLY CARRY TOP BRANDS')}
           </span>
         </div>
         

@@ -3,6 +3,7 @@ import { Search, SlidersHorizontal, MapPin, Ship, X, Globe, DollarSign } from 'l
 import { VEHICLE_CATEGORIES, VEHICLE_CONDITIONS } from '../../data/mockVehicles';
 import { VEHICLE_ORIGIN_LOCATIONS, TARGET_DESTINATION_PORTS } from '../../data/globalShippingData';
 import { useCurrency } from '../../context/CurrencyContext';
+import { useTranslation } from '../../context/LanguageContext';
 
 const InventoryFilterBar = ({
   searchTerm,
@@ -21,6 +22,7 @@ const InventoryFilterBar = ({
   onResetFilters
 }) => {
   const { currency, currencyInfo } = useCurrency();
+  const { t } = useTranslation();
 
   const hasActiveFilters = 
     searchTerm || 
@@ -39,11 +41,17 @@ const InventoryFilterBar = ({
         <div className="col-12 col-lg-4">
           <div className="d-flex align-items-center gap-2">
             <span className="text-secondary small fw-bold text-uppercase d-flex align-items-center gap-1">
-              <SlidersHorizontal size={14} className="text-danger" /> Condition:
+              <SlidersHorizontal size={14} className="text-danger" /> {t('inventory.conditionFilter', 'Condition:')}
             </span>
             <div className="btn-group w-100" role="group">
               {VEHICLE_CONDITIONS.map((cond) => {
                 const isActive = (selectedCondition || 'ALL').toUpperCase() === cond.toUpperCase();
+                const condLabel = cond === 'ALL' 
+                  ? t('searchBox.allConditions', 'ALL') 
+                  : cond === 'USED' 
+                    ? t('vehicleCard.usedBadge', 'USED') 
+                    : t('vehicleCard.newBadge', 'NEW');
+
                 return (
                   <button
                     key={cond}
@@ -56,7 +64,7 @@ const InventoryFilterBar = ({
                     }`}
                     style={{ fontSize: '12px', letterSpacing: '0.5px' }}
                   >
-                    {cond === 'ALL' ? 'ALL' : cond === 'USED' ? 'USED' : 'NEW'}
+                    {condLabel}
                   </button>
                 );
               })}
@@ -73,7 +81,7 @@ const InventoryFilterBar = ({
             <input 
               type="text" 
               className="form-control bg-dark text-white border-secondary small" 
-              placeholder="Search make, model, or year..."
+              placeholder={t('inventory.searchPlaceholder', 'Search make, model, or year...')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -83,17 +91,17 @@ const InventoryFilterBar = ({
         {/* Sort Select */}
         <div className="col-12 col-md-6 col-lg-3">
           <div className="d-flex align-items-center gap-2">
-            <label className="text-secondary small text-nowrap m-0">Sort By:</label>
+            <label className="text-secondary small text-nowrap m-0">{t('inventory.sortByLabel', 'Sort By:')}</label>
             <select 
               className="form-select bg-dark text-white border-secondary py-1.5 small"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
             >
-              <option value="default">Featured</option>
-              <option value="price-asc">Price: Low to High</option>
-              <option value="price-desc">Price: High to Low</option>
-              <option value="year-desc">Year: Newest First</option>
-              <option value="mileage-asc">Mileage: Lowest First</option>
+              <option value="default">{t('inventory.sortFeatured', 'Featured')}</option>
+              <option value="price-asc">{t('inventory.sortPriceAsc', 'Price: Low to High')}</option>
+              <option value="price-desc">{t('inventory.sortPriceDesc', 'Price: High to Low')}</option>
+              <option value="year-desc">{t('inventory.sortYearDesc', 'Year: Newest First')}</option>
+              <option value="mileage-asc">{t('inventory.sortMileageAsc', 'Mileage: Lowest First')}</option>
             </select>
           </div>
         </div>
@@ -165,17 +173,27 @@ const InventoryFilterBar = ({
       {/* Row 3: Category Filter Pills, Active Chips & Results Counter */}
       <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 pt-2 border-top border-secondary">
         <div className="d-flex flex-wrap align-items-center gap-2">
-          {VEHICLE_CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              type="button"
-              onClick={() => setSelectedCategory(cat)}
-              className={`btn btn-sm ${selectedCategory === cat ? 'btn-danger fw-bold shadow-xs' : 'btn-outline-secondary text-white-50'} rounded-pill px-3`}
-              style={{ fontSize: '12px' }}
-            >
-              {cat}
-            </button>
-          ))}
+          {VEHICLE_CATEGORIES.map((cat) => {
+            const catLabel = cat === 'ALL VEHICLES' ? t('searchBox.allConditions', 'ALL VEHICLES')
+              : cat === 'SEDANS' ? t('nav.sedans', 'SEDANS')
+              : cat === 'SUVS' ? t('nav.suvs', 'SUVS')
+              : cat === 'TRUCKS' ? t('nav.trucks', 'TRUCKS')
+              : cat === 'COUPES' ? t('nav.coupes', 'COUPES')
+              : cat === 'HYBRIDS' ? t('nav.hybrids', 'HYBRIDS')
+              : cat;
+
+            return (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setSelectedCategory(cat)}
+                className={`btn btn-sm ${selectedCategory === cat ? 'btn-danger fw-bold shadow-xs' : 'btn-outline-secondary text-white-50'} rounded-pill px-3`}
+                style={{ fontSize: '12px' }}
+              >
+                {catLabel}
+              </button>
+            );
+          })}
 
           {/* Reset Filters button if any active */}
           {hasActiveFilters && onResetFilters && (
@@ -186,15 +204,15 @@ const InventoryFilterBar = ({
               style={{ fontSize: '11px' }}
               title="Reset all search and location filters"
             >
-              <X size={12} /> Clear Filters
+              <X size={12} /> {t('inventory.clearAll', 'Clear Filters')}
             </button>
           )}
         </div>
 
         {/* Results Counter */}
         <div className="text-secondary small">
-          Showing <span className="text-white fw-bold">{totalResults}</span> {selectedCondition !== 'ALL' ? selectedCondition.toLowerCase() : ''} vehicles
-          {selectedOrigin !== 'ALL' && <span className="text-danger ms-1">• in {selectedOrigin}</span>}
+          <span className="text-white fw-bold">{totalResults}</span> {t('inventory.vehiclesFound', 'vehicles found')}
+          {selectedOrigin !== 'ALL' && <span className="text-danger ms-1">• {selectedOrigin}</span>}
         </div>
       </div>
     </div>
