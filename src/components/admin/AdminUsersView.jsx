@@ -13,7 +13,7 @@ const AdminUsersView = () => {
     { id: 'USR-101', name: 'Alex Henderson', email: 'alex@example.com', phone: '(555) 234-5678', role: 'buyer', totalOrders: 3, joined: 'Jan 12, 2025', status: 'Active' },
     { id: 'USR-102', name: 'Premier Motors Group', email: 'sales@premiermotors.com', phone: '(555) 876-5432', role: 'business_dealer', totalOrders: 28, joined: 'Feb 04, 2025', status: 'Verified' },
     { id: 'USR-103', name: 'David Miller', email: 'david.m@example.com', phone: '(555) 345-6789', role: 'private_seller', totalOrders: 2, joined: 'Mar 18, 2025', status: 'Active' },
-    { id: 'USR-104', name: 'Summit Admin Lead', email: 'admin@summitautogroup.com', phone: '(555) 000-1122', role: 'admin', totalOrders: 0, joined: 'Jan 01, 2025', status: 'Active' },
+    { id: 'USR-100', name: 'Emmanuel Saka', email: 'emmanuelsaka333@gmail.com', phone: '+234 800 000 0000', role: 'admin', totalOrders: 0, joined: 'Jan 01, 2025', status: 'Permanent Admin' },
     { id: 'USR-105', name: 'Jessica Taylor', email: 'jessica.t@example.com', phone: '(555) 987-6543', role: 'buyer', totalOrders: 1, joined: 'Apr 20, 2025', status: 'Active' },
     { id: 'USR-106', name: 'Lone Star Auto Dealers', email: 'contact@lonestarauto.com', phone: '(555) 432-1098', role: 'business_dealer', totalOrders: 42, joined: 'Jan 15, 2025', status: 'Verified' }
   ];

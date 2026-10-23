@@ -9,8 +9,10 @@ import {
   CreditCard, 
   User, 
   LogOut,
-  Car
+  Car,
+  Sparkles
 } from 'lucide-react';
+import { switchUserRole } from '../../utils/roleManager';
 
 /**
  * BuyerSidebar Component
@@ -39,6 +41,21 @@ const BuyerSidebar = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     navigate('/login');
+  };
+
+  const [upgrading, setUpgrading] = React.useState(false);
+
+  const handleBecomeSeller = async () => {
+    setUpgrading(true);
+    try {
+      await switchUserRole('private_seller');
+      navigate('/seller-dashboard');
+    } catch (err) {
+      console.error('Failed to switch to seller:', err);
+      navigate('/seller-dashboard');
+    } finally {
+      setUpgrading(false);
+    }
   };
 
   return (
@@ -91,8 +108,18 @@ const BuyerSidebar = () => {
         </div>
       </div>
 
-      {/* Logout Action Footer */}
+      {/* Switch to Seller & Logout Footer */}
       <div className="pt-3 border-top border-secondary border-opacity-25">
+        <button 
+          onClick={handleBecomeSeller} 
+          disabled={upgrading}
+          className="btn w-100 bg-white bg-opacity-10 text-white hover-bg-danger d-flex align-items-center justify-content-center gap-2 border-0 px-3 py-2 rounded-2 mb-2 fw-semibold small transition-all"
+          title="Switch account to Seller and open Seller Dashboard"
+        >
+          <Sparkles size={15} className="text-warning" />
+          <span>{upgrading ? 'Switching...' : 'Become a Seller'}</span>
+        </button>
+
         <button 
           onClick={handleLogout} 
           className="btn w-100 text-white-50 hover-text-white d-flex align-items-center gap-3 border-0 px-3 py-2 rounded-2 text-start"

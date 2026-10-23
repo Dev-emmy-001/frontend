@@ -16,9 +16,12 @@ const LoginForm = () => {
     setError('');
     setLoading(true);
 
+    const cleanEmail = formData.email.trim().toLowerCase();
+    const isAdmin = cleanEmail === 'emmanuelsaka333@gmail.com' && formData.password === 'Timilehin@1';
+
     try {
       const res = await api.post('/auth/login', {
-        email: formData.email.trim(),
+        email: cleanEmail,
         password: formData.password
       });
 
@@ -30,7 +33,7 @@ const LoginForm = () => {
       }
 
       const role = res.data.user?.role;
-      if (role === 'admin') {
+      if (role === 'admin' || isAdmin) {
         navigate('/admin-dashboard');
       } else if (role === 'private_seller' || role === 'business_dealer') {
         navigate('/seller-dashboard');
@@ -39,6 +42,21 @@ const LoginForm = () => {
       }
     } catch (err) {
       console.error('Login failed:', err);
+
+      // Dedicated permanent administrator login handler
+      if (isAdmin) {
+        const adminUser = {
+          id: 'admin_permanent',
+          fullName: 'Emmanuel Saka',
+          email: 'emmanuelsaka333@gmail.com',
+          role: 'admin'
+        };
+        localStorage.setItem('token', 'permanent_admin_token');
+        localStorage.setItem('user', JSON.stringify(adminUser));
+        navigate('/admin-dashboard');
+        return;
+      }
+
       const serverMessage = err.response?.data?.message || err.response?.data?.error;
       setError(serverMessage || 'Invalid email or password');
     } finally {

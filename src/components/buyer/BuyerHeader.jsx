@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, UserCheck, Sparkles, Search } from 'lucide-react';
 import api from '../../data/apiConfig';
 
+import { switchUserRole, getCurrentUser } from '../../utils/roleManager';
+
 /**
  * BuyerHeader Component
  * Displays the page header, user greeting, role badge, and role upgrade actions.
@@ -22,26 +24,15 @@ const BuyerHeader = ({
   const [upgrading, setUpgrading] = useState(false);
   const navigate = useNavigate();
 
-  const currentUser = user?.fullName ? user : (JSON.parse(localStorage.getItem('user')) || {});
+  const currentUser = user?.fullName ? user : (getCurrentUser() || {});
 
-  const handleUpgradeRole = async () => {
-    const confirmUpgrade = window.confirm('Would you like to upgrade your account to a Private Seller to list and sell vehicles?');
-    if (!confirmUpgrade) return;
-
+  const handleBecomeSeller = async () => {
     setUpgrading(true);
     try {
-      // Send role update request to backend
-      const res = await api.put('/users/update-role', { role: 'private_seller' });
-      
-      const updatedUser = res.data?.user || { ...currentUser, role: 'private_seller' };
-      localStorage.setItem('user', JSON.stringify(updatedUser));
-      alert('Congratulations! Your account has been upgraded to Private Seller.');
+      await switchUserRole('private_seller');
       navigate('/seller-dashboard');
     } catch (err) {
-      console.warn('Backend endpoint unavailable, applying local role upgrade:', err.message);
-      const updatedUser = { ...currentUser, role: 'private_seller' };
-      localStorage.setItem('user', JSON.stringify(updatedUser));
-      alert('Your account role has been updated to Private Seller.');
+      console.error('Failed to switch role to seller:', err);
       navigate('/seller-dashboard');
     } finally {
       setUpgrading(false);
@@ -75,13 +66,13 @@ const BuyerHeader = ({
 
         {showUpgrade && (
           <button 
-            onClick={handleUpgradeRole} 
+            onClick={handleBecomeSeller} 
             disabled={upgrading}
-            className="btn btn-dark btn-sm fw-bold d-flex align-items-center gap-2 px-3 py-2"
-            title="List and sell vehicles on Summit Auto Group"
+            className="btn btn-dark btn-sm fw-bold d-flex align-items-center gap-2 px-3 py-2 shadow-xs animate-btn"
+            title="Switch account to Seller and open Seller Dashboard"
           >
             <Sparkles size={15} className="text-warning" />
-            <span>{upgrading ? 'Upgrading...' : 'Become a Seller'}</span>
+            <span>{upgrading ? 'Switching...' : 'Become a Seller'}</span>
           </button>
         )}
       </div>

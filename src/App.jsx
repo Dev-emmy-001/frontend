@@ -42,7 +42,7 @@ import AdminRevenue from './pages/admin/AdminRevenue';
 
 
 // payment section
-import Checkout from './components/payment/Checkout';
+import Checkout from './components/payment/Checkouts';
 
 // Real-Time Currency Engine Context
 import { CurrencyProvider } from './context/CurrencyContext';

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, ShieldCheck, Shield, Building, User, Tag } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import api from '../../data/apiConfig';
 import SocialAuthButtons from './SocialAuthButtons';
 
@@ -10,8 +10,7 @@ const SignupForm = () => {
     email: '', 
     phone: '',
     password: '', 
-    confirmPassword: '', 
-    role: 'buyer' 
+    confirmPassword: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -38,7 +37,7 @@ const SignupForm = () => {
         email: formData.email.trim(),
         phone: formData.phone.trim(),
         password: formData.password,
-        role: formData.role
+        role: 'buyer'
       });
 
       if (res.data.token) {
@@ -48,14 +47,7 @@ const SignupForm = () => {
         localStorage.setItem('user', JSON.stringify(res.data.user));
       }
 
-      const role = res.data.user?.role || formData.role;
-      if (role === 'admin') {
-        navigate('/admin-dashboard');
-      } else if (role === 'private_seller' || role === 'business_dealer') {
-        navigate('/seller-dashboard');
-      } else {
-        navigate('/buyer-dashboard');
-      }
+      navigate('/buyer-dashboard');
     } catch (err) {
       console.error('Registration failed:', err);
       const serverMessage = err.response?.data?.message || err.response?.data?.error;
@@ -73,78 +65,8 @@ const SignupForm = () => {
           <h3 className="fw-bold text-dark mb-1" style={{ fontSize: '1.65rem' }}>
             Create Account
           </h3>
-          <p className="text-muted small">Join Summit Auto Group to buy, sell, or manage</p>
+          <p className="text-muted small">Join Summit Auto Group to explore and buy vehicles</p>
         </div>
-
-        {/* Account Role Selector */}
-        <div className="mb-3">
-          <label className="form-label text-dark fw-bold small mb-1.5 d-flex align-items-center justify-content-between">
-            <span>Select Account Type</span>
-            <span className="text-muted fw-normal" style={{ fontSize: '11px' }}>
-              {formData.role === 'admin' ? '🛡️ Administrator' : formData.role === 'business_dealer' ? '🏢 Dealership' : formData.role === 'private_seller' ? '🏷️ Seller' : '👤 Car Buyer'}
-            </span>
-          </label>
-          <div className="d-flex p-1 bg-light rounded-3 border border-light gap-1">
-            <button
-              type="button"
-              onClick={() => setFormData({ ...formData, role: 'buyer' })}
-              className={`btn btn-sm flex-grow-1 rounded-2 fw-bold transition-all py-1.5 px-1 ${
-                formData.role === 'buyer' 
-                  ? 'bg-danger text-white shadow-xs' 
-                  : 'text-muted hover-text-dark'
-              }`}
-              style={{ fontSize: '11.5px' }}
-            >
-              Buyer
-            </button>
-            <button
-              type="button"
-              onClick={() => setFormData({ ...formData, role: 'private_seller' })}
-              className={`btn btn-sm flex-grow-1 rounded-2 fw-bold transition-all py-1.5 px-1 ${
-                formData.role === 'private_seller' 
-                  ? 'bg-danger text-white shadow-xs' 
-                  : 'text-muted hover-text-dark'
-              }`}
-              style={{ fontSize: '11.5px' }}
-            >
-              Seller
-            </button>
-            <button
-              type="button"
-              onClick={() => setFormData({ ...formData, role: 'business_dealer' })}
-              className={`btn btn-sm flex-grow-1 rounded-2 fw-bold transition-all py-1.5 px-1 ${
-                formData.role === 'business_dealer' 
-                  ? 'bg-danger text-white shadow-xs' 
-                  : 'text-muted hover-text-dark'
-              }`}
-              style={{ fontSize: '11.5px' }}
-            >
-              Dealer
-            </button>
-            <button
-              type="button"
-              onClick={() => setFormData({ ...formData, role: 'admin' })}
-              className={`btn btn-sm flex-grow-1 rounded-2 fw-bold transition-all py-1.5 px-1 d-flex align-items-center justify-content-center gap-1 ${
-                formData.role === 'admin' 
-                  ? 'bg-dark text-white shadow-xs' 
-                  : 'text-dark hover-bg-light border border-dark border-opacity-25'
-              }`}
-              style={{ fontSize: '11.5px' }}
-            >
-              <Shield size={12} className={formData.role === 'admin' ? 'text-danger' : 'text-danger'} />
-              Admin
-            </button>
-          </div>
-        </div>
-
-        {formData.role === 'admin' && (
-          <div className="alert alert-dark bg-dark text-white border-0 py-2 px-3 small rounded-3 mb-3 d-flex align-items-start gap-2 shadow-xs">
-            <ShieldCheck size={16} className="text-danger flex-shrink-0 mt-0.5" />
-            <span style={{ fontSize: '11.5px', lineHeight: '1.4' }}>
-              <strong>Admin Registration:</strong> You are creating an Administrator account. After signup, you will be redirected straight to the <strong>Admin Control Portal</strong>.
-            </span>
-          </div>
-        )}
 
         {error && (
           <div className="alert alert-danger py-2 px-3 text-center small mb-3">

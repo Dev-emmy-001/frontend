@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { User, LogOut, LayoutDashboard, ShoppingBag, Heart, Shield } from 'lucide-react';
+import { User, LogOut, LayoutDashboard, ShoppingBag, Heart, Shield, Sparkles, ArrowLeftRight } from 'lucide-react';
 import logoImg from '../../assets/logo.png';
 import { siteConfig } from '../../data/siteConfig';
 import { useTranslation } from '../../context/LanguageContext';
 import LanguageSwitcher from './LanguageSwitcher';
+import { switchUserRole } from '../../utils/roleManager';
 
 const Navbar = () => {
   const location = useLocation();
@@ -12,7 +13,7 @@ const Navbar = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const { t, isRTL } = useTranslation();
 
-  useEffect(() => {
+  const refreshUser = () => {
     const userStr = localStorage.getItem('user');
     const token = localStorage.getItem('token');
     if (userStr && token) {
@@ -24,6 +25,16 @@ const Navbar = () => {
     } else {
       setCurrentUser(null);
     }
+  };
+
+  useEffect(() => {
+    refreshUser();
+    window.addEventListener('storage', refreshUser);
+    window.addEventListener('user_role_changed', refreshUser);
+    return () => {
+      window.removeEventListener('storage', refreshUser);
+      window.removeEventListener('user_role_changed', refreshUser);
+    };
   }, [location.pathname]);
 
   const handleLogout = () => {
@@ -207,6 +218,37 @@ const Navbar = () => {
                       <span>{t('nav.profileSettings', 'Profile Settings')}</span>
                     </Link>
                   </li>
+
+                  {/* Switch between Buyer and Seller */}
+                  {!isAdmin && !isSeller && (
+                    <li>
+                      <button 
+                        onClick={async () => {
+                          await switchUserRole('private_seller');
+                          navigate('/seller-dashboard');
+                        }}
+                        className="dropdown-item small d-flex align-items-center gap-2 py-2 fw-semibold text-dark w-100 text-start"
+                      >
+                        <Sparkles size={15} className="text-warning" />
+                        <span>Become a Seller</span>
+                      </button>
+                    </li>
+                  )}
+
+                  {!isAdmin && isSeller && (
+                    <li>
+                      <button 
+                        onClick={async () => {
+                          await switchUserRole('buyer');
+                          navigate('/buyer-dashboard');
+                        }}
+                        className="dropdown-item small d-flex align-items-center gap-2 py-2 fw-semibold text-dark w-100 text-start"
+                      >
+                        <ArrowLeftRight size={15} className="text-danger" />
+                        <span>Switch to Buyer Account</span>
+                      </button>
+                    </li>
+                  )}
 
                   <li><hr className="dropdown-divider my-1" /></li>
 

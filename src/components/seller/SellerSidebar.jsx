@@ -2,9 +2,10 @@ import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, Car, PlusCircle, ShoppingBag, DollarSign, 
-  MessageSquare, User, LogOut, ArrowLeft
+  MessageSquare, User, LogOut, ArrowLeft, ArrowLeftRight
 } from 'lucide-react';
 import { siteConfig } from '../../data/siteConfig';
+import { switchUserRole } from '../../utils/roleManager';
 
 const SellerSidebar = () => {
   const location = useLocation();
@@ -30,6 +31,21 @@ const SellerSidebar = () => {
     if (path === '/seller-dashboard' && location.pathname === '/seller-dashboard') return true;
     if (path !== '/seller-dashboard' && location.pathname.startsWith(path)) return true;
     return false;
+  };
+
+  const [switching, setSwitching] = React.useState(false);
+
+  const handleSwitchToBuyer = async () => {
+    setSwitching(true);
+    try {
+      await switchUserRole('buyer');
+      navigate('/buyer-dashboard');
+    } catch (err) {
+      console.error('Failed to switch to buyer:', err);
+      navigate('/buyer-dashboard');
+    } finally {
+      setSwitching(false);
+    }
   };
 
   return (
@@ -71,8 +87,18 @@ const SellerSidebar = () => {
         </nav>
       </div>
 
-      {/* Footer / Logout and Back to Main Site */}
-      <div className="pt-4 border-top border-secondary border-opacity-25 d-flex flex-column gap-1">
+      {/* Footer / Switch to Buyer, Back to Main Site, Logout */}
+      <div className="pt-3 border-top border-secondary border-opacity-25 d-flex flex-column gap-1">
+        <button 
+          onClick={handleSwitchToBuyer} 
+          disabled={switching}
+          className="btn w-100 bg-white bg-opacity-10 text-white hover-bg-danger d-flex align-items-center justify-content-center gap-2 border-0 px-3 py-2 rounded-2 mb-2 fw-semibold small transition-all"
+          title="Switch back to Buyer account and open Buyer Dashboard"
+        >
+          <ArrowLeftRight size={15} className="text-danger" />
+          <span>{switching ? 'Switching...' : 'Switch to Buyer'}</span>
+        </button>
+
         <Link 
           to="/" 
           className="btn text-white-50 d-flex align-items-center gap-2 border-0 px-3 py-2 text-start small hover-text-white"
